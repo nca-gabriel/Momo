@@ -19,7 +19,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`flex h-screen flex-col justify-between border-e border-gray-100 bg-white transition-all duration-300  ${
+      className={`flex h-screen flex-col justify-between border-e border-gray-100 bg-white transition-all duration-300 ${
         showContent ? "w-[4rem]" : "w-[18rem]"
       }`}
     >

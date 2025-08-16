@@ -9,6 +9,14 @@
   @apply border-2 border-dashed border-red-500;
 }
 
+.debug2 {
+  @apply border-2 border-dashed border-blue-500;
+}
+
+.debug3 {
+  @apply border-2 border-dashed border-purple-500;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
