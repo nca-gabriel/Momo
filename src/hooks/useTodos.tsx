@@ -1,56 +1,63 @@
 import { useEffect, useReducer } from "react";
-import { Todo, TodoInput, TodoUpdate } from "@/types/todo";
+import { todoReducer } from "@/types/todo.reducer";
+import { subTodoInput, todoInput } from "@/types/todo.schema";
 
-// --- Reducer + actions ---
-type Action =
-  | { type: "load"; payload: Todo[] }
-  | { type: "add"; payload: TodoInput }
-  | { type: "update"; id: string; payload: TodoUpdate }
-  | { type: "delete"; id: string };
+const STORAGE_KEY = "todos";
 
-function todosReducer(state: Todo[], action: Action) {
-  switch (action.type) {
-    case "load":
-      return action.payload;
-    case "add":
-      return [...state, { ...action.payload, id: crypto.randomUUID() }];
-    case "update":
-      return state.map((todo) =>
-        todo.id === action.id ? { ...todo, ...action.payload } : todo
-      );
-    case "delete":
-      return state.filter((todo) => todo.id !== action.id);
-    default:
-      return state;
-  }
-}
+export function useTodos() {
+  const [todos, dispatch] = useReducer(todoReducer, []);
 
-function useTodos() {
-  const [todos, dispatch] = useReducer(todosReducer, []);
-
-  //  // initial load
+  // hydrate on client
   useEffect(() => {
-    const stored = localStorage.getItem("todos");
-    if (stored) {
-      const parsed: Todo[] = JSON.parse(stored).map((t: any) => ({
-        ...t,
-        dateTime: new Date(t.dateTime),
-      }));
-      dispatch({ type: "load", payload: parsed });
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      dispatch({ type: "INIT_TODOS", payload: JSON.parse(raw) });
     }
   }, []);
 
-  // sync to localStorage
+  // persist on change
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = (todo: TodoInput) => dispatch({ type: "add", payload: todo });
-  const updateTodo = (id: string, updates: TodoUpdate) =>
-    dispatch({ type: "update", id, payload: updates });
-  const deleteTodo = (id: string) => dispatch({ type: "delete", id });
+  const addTodo = (todo: todoInput) => {
+    dispatch({ type: "ADD_TODO", payload: todo });
+  };
 
-  return { todos, addTodo, updateTodo, deleteTodo };
+  const updateTodo = (id: string, data: Partial<todoInput>) => {
+    dispatch({ type: "UPDATE_TODO", payload: { id, data } });
+  };
+
+  const deleteTodo = (id: string) => {
+    dispatch({ type: "DELETE_TODO", payload: { id } });
+  };
+
+  const addSubTodo = (todoId: string, subTodo: subTodoInput) => {
+    dispatch({ type: "ADD_SUBTODO", payload: { todoId, subTodo } });
+  };
+
+  const updateSubTodo = (
+    todoId: string,
+    subTodoId: string,
+    subTodo: Partial<subTodoInput>
+  ) => {
+    dispatch({
+      type: "UPDATE_SUBTODO",
+      payload: { todoId, subTodoId, subTodo },
+    });
+  };
+
+  const deleteSubTodo = (todoId: string, subTodoId: string) => {
+    dispatch({ type: "DELETE_SUBTODO", payload: { todoId, subTodoId } });
+  };
+
+  return {
+    todos,
+    addTodo,
+    updateTodo,
+    deleteTodo,
+    addSubTodo,
+    updateSubTodo,
+    deleteSubTodo,
+  };
 }
-
-export default useTodos;
