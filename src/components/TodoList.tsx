@@ -5,7 +5,7 @@ import { useState } from "react";
 import { todoInput } from "@/types/todo.schema";
 
 export default function TodoList() {
-  const { todos, addTodo, deleteTodo, updateTodo } = useTodos();
+  const { todos, addTodo, updateTodo, deleteTodo } = useTodos();
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<todoInput | null>(null);
 
@@ -17,7 +17,7 @@ export default function TodoList() {
         <div className="flex justify-end">
           <button
             onClick={() => {
-              setDrawer(!drawer);
+              setDrawer(true);
               setEditingTodo(null);
             }}
           >
@@ -28,16 +28,32 @@ export default function TodoList() {
           {todos.map((todo) => (
             <li
               key={todo.id}
-              className="border p-2 flex justify-between"
-              onClick={() => {
-                setEditingTodo(todo);
-                setDrawer(true);
-              }}
+              className="border p-2 flex justify-between items-center"
             >
-              <div>
-                <h2 className="font-bold">{todo.title}</h2>
-                <small></small>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={todo.status || false}
+                  onChange={(e) =>
+                    updateTodo(todo.id, { ...todo, status: e.target.checked })
+                  }
+                />
+                <h2
+                  className={`font-bold ${
+                    todo.status ? "line-through text-gray-400" : ""
+                  }`}
+                >
+                  {todo.title}
+                </h2>
               </div>
+              <button
+                onClick={() => {
+                  setEditingTodo(todo);
+                  setDrawer(true);
+                }}
+              >
+                Edit
+              </button>
             </li>
           ))}
         </ul>
@@ -47,27 +63,20 @@ export default function TodoList() {
       {drawer && (
         <TodoForm
           initialValues={editingTodo}
-          onSubmit={(data) => {
-            if (editingTodo) {
-              updateTodo(editingTodo.id, data);
-              setEditingTodo(null);
-            } else {
-              addTodo(data);
-            }
-          }}
           onClose={() => {
             setEditingTodo(null);
             setDrawer(false);
           }}
-          onDelete={
-            editingTodo
-              ? () => {
-                  deleteTodo(editingTodo.id);
-                  setEditingTodo(null);
-                  setDrawer(false);
-                }
-              : undefined
-          }
+          onSubmit={(data) => {
+            if (editingTodo) {
+              updateTodo(editingTodo.id, data);
+            } else {
+              addTodo(data);
+            }
+          }}
+          onDelete={(id) => {
+            deleteTodo(id);
+          }}
         />
       )}
     </div>
