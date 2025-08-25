@@ -11,6 +11,14 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
+const formatDateTimeLocal = (date: Date) => {
+  const d = new Date(date);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`;
+};
+
 // TodoForm.tsx
 export default function TodoForm({
   initialValues,
@@ -23,6 +31,8 @@ export default function TodoForm({
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<todoInput>({
     resolver: zodResolver(todoSchema) as Resolver<todoInput>,
     defaultValues: initialValues ?? {
@@ -30,6 +40,8 @@ export default function TodoForm({
       details: "",
     },
   });
+
+  const watchedDate = watch("date"); // subscribe to changes
 
   // update form when initialValues changes
   useEffect(() => {
@@ -47,7 +59,22 @@ export default function TodoForm({
 
   const handleFormSubmit = (data: todoInput) => {
     onSubmit(data);
-    reset(data); // <-- clears form after successful submit
+
+    if (initialValues) {
+      // update: keep form synced with updated todo
+      reset(data);
+      alert("updated");
+    } else {
+      // new todo: clear the form for next entry
+      reset({
+        id: crypto.randomUUID(),
+        title: "",
+        details: "",
+        date: new Date(),
+        status: false,
+        subTodos: [],
+      });
+    }
   };
 
   return (
@@ -85,9 +112,8 @@ export default function TodoForm({
         <section>
           <input
             type="datetime-local"
-            {...register("date", {
-              valueAsDate: true,
-            })}
+            value={watchedDate ? formatDateTimeLocal(watchedDate) : ""}
+            onChange={(e) => setValue("date", new Date(e.target.value))}
           />
         </section>
         <h1 className="font-bold text-lg">Subtask:</h1>
