@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from "react";
-import { todoReducer } from "@/types/todo.reducer";
-import { todoInput } from "@/types/todo.schema";
+import { todoReducer } from "@/utils/todo.reducer";
+import { todoInput } from "@/utils/todo.schema";
 
 const STORAGE_KEY = "todos";
 

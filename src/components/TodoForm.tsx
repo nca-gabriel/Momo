@@ -1,8 +1,9 @@
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { todoSchema, type todoInput } from "../types/todo.schema";
+import { todoSchema, type todoInput } from "../utils/todo.schema";
 import { useEffect } from "react";
 import type { Resolver } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 type Props = {
   initialValues: todoInput | null;
@@ -33,21 +34,33 @@ export default function TodoForm({
     reset,
     watch,
     setValue,
+    control,
   } = useForm<todoInput>({
     resolver: zodResolver(todoSchema) as Resolver<todoInput>,
     defaultValues: initialValues ?? {
       title: "",
       details: "",
+      date: new Date(),
+      subTodos: [],
     },
   });
 
   const watchedDate = watch("date"); // subscribe to changes
 
+  // Field array for subtodos
+  const {
+    fields: subTodos,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "subTodos",
+  });
+
   // update form when initialValues changes
   useEffect(() => {
     reset(
       initialValues ?? {
-        id: crypto.randomUUID(),
         title: "",
         details: "",
         date: new Date(),
@@ -109,15 +122,61 @@ export default function TodoForm({
             className="flex flex-1 shadow-md rounded-md p-2"
           />
         </div>
-        <section>
-          <input
-            type="datetime-local"
-            value={watchedDate ? formatDateTimeLocal(watchedDate) : ""}
-            onChange={(e) => setValue("date", new Date(e.target.value))}
-          />
-        </section>
+        <Controller
+          control={control}
+          name="date"
+          render={({ field }) => (
+            <input
+              type="datetime-local"
+              value={
+                field.value
+                  ? new Date(field.value).toISOString().slice(0, 16)
+                  : ""
+              }
+              onChange={(e) => field.onChange(new Date(e.target.value))}
+            />
+          )}
+        />
+
         <h1 className="font-bold text-lg">Subtask:</h1>
-        <button>Add Subtask+</button>
+        {subTodos.map((subTodo, index) => (
+          <div key={subTodo.id} className="flex flex-col gap-2 mb-2">
+            <input
+              {...register(`subTodos.${index}.title` as const)}
+              placeholder="Subtask title"
+              className="shadow-md"
+            />
+            <input
+              {...register(`subTodos.${index}.details` as const)}
+              placeholder="Subtask details"
+              className="shadow-md"
+            />
+
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="bg-red-500 text-white px-2 rounded"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={() =>
+            append({
+              id: crypto.randomUUID(),
+              title: "",
+              details: "",
+              status: false,
+            })
+          }
+          className="mb-2 bg-green-500 text-white p-1 rounded"
+        >
+          Add Subtask+
+        </button>
+
         <div className="flex  gap-2">
           <button
             type="submit"

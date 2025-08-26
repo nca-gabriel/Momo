@@ -2,7 +2,7 @@
 import TodoForm from "./TodoForm";
 import { useTodos } from "../hooks/useTodos";
 import { useState } from "react";
-import { todoInput } from "@/types/todo.schema";
+import { todoInput } from "@/utils/todo.schema";
 
 export default function TodoList() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodos();

@@ -5,7 +5,6 @@ export const subTodoSchema = z.object({
   title: z.string().min(1, "title is required"),
   details: z.string().default(""),
   status: z.boolean().default(false),
-  date: z.date().default(() => new Date()),
 });
 export type subTodoInput = z.infer<typeof subTodoSchema>;
 
@@ -13,8 +12,9 @@ export const todoSchema = z.object({
   id: z.uuid().default(() => crypto.randomUUID()),
   title: z.string().min(1, "title is required"),
   details: z.string().default(""),
-  date: z.date().default(() => new Date()),
+  date: z.coerce.date(),
   status: z.boolean().default(false),
+  tagId: z.uuid().optional(),
   subTodos: z.array(subTodoSchema).default([]),
 });
 export type todoInput = z.infer<typeof todoSchema>; // single object
