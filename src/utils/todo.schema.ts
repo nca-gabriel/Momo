@@ -14,7 +14,7 @@ export const todoSchema = z.object({
   details: z.string().default(""),
   date: z.coerce.date(),
   status: z.boolean().default(false),
-  tagId: z.uuid().optional(),
+  ListId: z.uuid().optional(),
   subTodos: z.array(subTodoSchema).default([]),
 });
 export type todoInput = z.infer<typeof todoSchema>; // single object

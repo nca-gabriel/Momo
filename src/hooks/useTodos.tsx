@@ -4,16 +4,16 @@ import { todoInput } from "@/utils/todo.schema";
 
 const STORAGE_KEY = "todos";
 
-export function useTodos() {
-  const [todos, dispatch] = useReducer(todoReducer, []);
-
-  // hydrate on client
-  useEffect(() => {
+function initTodos() {
+  if (typeof window !== "undefined") {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      dispatch({ type: "INIT_TODOS", payload: JSON.parse(raw) });
-    }
-  }, []);
+    return raw ? JSON.parse(raw) : [];
+  }
+  return [];
+}
+
+export function useTodos() {
+  const [todos, dispatch] = useReducer(todoReducer, [], initTodos);
 
   // persist on change
   useEffect(() => {

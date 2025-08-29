@@ -12,14 +12,6 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-const formatDateTimeLocal = (date: Date) => {
-  const d = new Date(date);
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
-  )}:${pad(d.getMinutes())}`;
-};
-
 // TodoForm.tsx
 export default function TodoForm({
   initialValues,
@@ -32,8 +24,6 @@ export default function TodoForm({
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
-    setValue,
     control,
   } = useForm<todoInput>({
     resolver: zodResolver(todoSchema) as Resolver<todoInput>,
@@ -44,8 +34,6 @@ export default function TodoForm({
       subTodos: [],
     },
   });
-
-  const watchedDate = watch("date"); // subscribe to changes
 
   // Field array for subtodos
   const {
@@ -110,6 +98,11 @@ export default function TodoForm({
           <input
             {...register("title")}
             type="text"
+            placeholder="Task Name"
+            className="shadow-md p-2 rounded-md"
+          />
+          <input
+            type="color"
             placeholder="Task Name"
             className="shadow-md p-2 rounded-md"
           />
