@@ -81,11 +81,11 @@ export default function Home() {
                         Edit
                       </button>
                     </div>
-                    <section className="flex gap-2">
+                    <section className="flex gap-2 ml-4">
                       {list && (
                         <div className="flex items-center gap-1">
                           <span
-                            className="inline-block w-3 h-3 rounded-full ml-4"
+                            className="inline-block w-3 h-3 rounded-full "
                             style={{ backgroundColor: list.color }}
                           />
                           <span>{list.name}</span>

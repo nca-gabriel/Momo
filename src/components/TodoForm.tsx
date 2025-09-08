@@ -79,6 +79,7 @@ export default function TodoForm({
         date: new Date(),
         status: false,
         subTodos: [],
+        ListId: undefined,
       });
     }
   };
@@ -135,13 +136,18 @@ export default function TodoForm({
         <div className="flex flex-col gap-2">
           <label className="font-semibold">List:</label>
           <select {...register("ListId")} className="shadow-md p-2 rounded-md">
-            <option value="">No list</option>
+            <option value="00000000-0000-0000-0000-000000000000">
+              No list
+            </option>
             {lists.map((list) => (
               <option key={list.id} value={list.id}>
                 {list.name}
               </option>
             ))}
           </select>
+          {errors.ListId && (
+            <span className="text-red-500">{errors.ListId.message}</span>
+          )}
         </div>
 
         <h1 className="font-bold text-lg">Subtasks:</h1>

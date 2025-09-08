@@ -32,8 +32,12 @@ export function useTodos() {
     dispatch({ type: "DELETE_TODO", payload: { id } });
   };
 
+  const sortedTodos = [...todos].sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+
   return {
-    todos,
+    todos: sortedTodos,
     addTodo,
     updateTodo,
     deleteTodo,
