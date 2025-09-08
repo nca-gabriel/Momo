@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <AppProvider>
           <Sidebar />
-          {children}
+          <main className="ml-4 pl-5 flex flex-1 flex-col p-4">{children}</main>
         </AppProvider>
       </body>
     </html>

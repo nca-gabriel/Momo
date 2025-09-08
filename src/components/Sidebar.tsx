@@ -36,11 +36,11 @@ export default function Sidebar() {
   return (
     <div
       className={` flex h-screen flex-col justify-between border-e border-gray-100 bg-white transition-all duration-300 ${
-        showContent ? "w-[4rem]" : "w-[18rem]"
-      }`}
+        showContent ? "w-[3rem]   max-sm:bg-transparent" : "w-[18rem]"
+      } max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:border-none`}
     >
       <section>
-        <div className="px-4 py-6 mb-10">
+        <div className="px-4 py-6 mb-10 ">
           <div
             className={`flex mb-5 ${
               !showContent ? "justify-between" : "justify-center"

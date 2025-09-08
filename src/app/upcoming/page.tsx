@@ -43,7 +43,7 @@ export default function Upcoming() {
   );
 
   return (
-    <div className="p-4">
+    <div className="">
       {renderList("Today", todayTodos)}
       {renderList("Tomorrow", tomorrowTodos)}
       {renderList("This Week", thisWeekTodos)}

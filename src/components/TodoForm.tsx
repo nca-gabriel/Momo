@@ -85,7 +85,7 @@ export default function TodoForm({
   };
 
   return (
-    <div className="w-80 bg-white shadow-lg p-4 border-l">
+    <div className="z-10 w-80 bg-white shadow-lg p-4 border-e border-gray-100 max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60">
       <header className="flex justify-between mb-4">
         <h1 className="font-bold text-lg">Task:</h1>
         <button
