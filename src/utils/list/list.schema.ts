@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const listSchema = z.object({
-  id: z.uuid().default(() => crypto.randomUUID()),
+  id: z.uuid(),
   name: z.string(),
   color: z.string().regex(/^#([0-9A-Fa-f]{6})$/, "Invalid hex color"),
   date: z.coerce.date(),

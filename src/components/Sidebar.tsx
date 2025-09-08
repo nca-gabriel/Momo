@@ -3,12 +3,17 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useListContext } from "@/context/AppProvider";
+import ListForm from "./ListForm";
+import { listInput } from "@/utils/list/list.schema";
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [openList, setOpenList] = useState(false);
   const [showContent, setShowContent] = useState(true);
   const pathname = usePathname();
+  const { lists } = useListContext();
+  const [editingList, setEditingList] = useState<listInput | null>(null);
 
   useEffect(() => {
     if (collapsed) {
@@ -82,27 +87,60 @@ export default function Sidebar() {
             <>
               <p>LISTS</p>
               <ul className="mt-6 space-y-1">
-                <li>
-                  <a
-                    href="#"
-                    className="block rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700"
-                  >
-                    Upcomming
-                  </a>
-                </li>
+                {lists.map((list) => (
+                  <li key={list.id}>
+                    <div className="flex items-center justify-between">
+                      {/* Navigation */}
+                      <Link
+                        href={`/lists/${list.name}`}
+                        className="flex items-center gap-2 px-2 py-1 hover:bg-gray-100 rounded flex-1"
+                      >
+                        <span
+                          className="inline-block w-3 h-3 rounded-full"
+                          style={{ backgroundColor: list.color }}
+                        />
+                        <span>{list.name}</span>
+                      </Link>
+
+                      {/* Edit button */}
+                      <button
+                        onClick={() => {
+                          if (editingList?.id === list.id) {
+                            setOpenList((prev) => !prev);
+                          } else {
+                            setEditingList(list);
+                            setOpenList(true);
+                          }
+                        }}
+                        className="ml-2 px-2 py-1 text-sm text-gray-500 hover:text-black"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </li>
+                ))}
 
                 <li>
                   <button
-                    onClick={() => setOpenList(!openList)}
+                    onClick={() => {
+                      setEditingList(null);
+                      setOpenList((prev) => !prev);
+                    }}
                     className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                   >
                     + Add a new list
                   </button>
                 </li>
 
-                {!openList && (
-                  <div>
-                    <form></form>
+                {openList && (
+                  <div className="p-2 mt-2">
+                    <ListForm
+                      initialValues={editingList}
+                      onClose={() => {
+                        setOpenList(false);
+                        setEditingList(null);
+                      }}
+                    />
                   </div>
                 )}
               </ul>

@@ -1,9 +1,10 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { todoSchema, type todoInput } from "../utils/todo.schema";
+import { todoSchema, type todoInput } from "../utils/todo/todo.schema";
 import { useEffect } from "react";
 import type { Resolver } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import { useListContext } from "@/context/AppProvider";
 
 type Props = {
   initialValues: todoInput | null;
@@ -32,6 +33,7 @@ export default function TodoForm({
       details: "",
       date: new Date(),
       subTodos: [],
+      ListId: undefined,
     },
   });
 
@@ -45,6 +47,8 @@ export default function TodoForm({
     name: "subTodos",
   });
 
+  const { lists } = useListContext();
+
   // update form when initialValues changes
   useEffect(() => {
     reset(
@@ -53,6 +57,7 @@ export default function TodoForm({
         details: "",
         date: new Date(),
         status: false,
+        ListId: undefined,
         subTodos: [],
       }
     );
@@ -101,11 +106,7 @@ export default function TodoForm({
             placeholder="Task Name"
             className="shadow-md p-2 rounded-md"
           />
-          <input
-            type="color"
-            placeholder="Task Name"
-            className="shadow-md p-2 rounded-md"
-          />
+
           {errors.title && (
             <span className="text-red-500">{errors.title.message}</span>
           )}
@@ -130,6 +131,18 @@ export default function TodoForm({
             />
           )}
         />
+
+        <div className="flex flex-col gap-2">
+          <label className="font-semibold">List:</label>
+          <select {...register("ListId")} className="shadow-md p-2 rounded-md">
+            <option value="">No list</option>
+            {lists.map((list) => (
+              <option key={list.id} value={list.id}>
+                {list.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <h1 className="font-bold text-lg">Subtask:</h1>
         {subTodos.map((subTodo, index) => (
