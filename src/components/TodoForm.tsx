@@ -144,30 +144,55 @@ export default function TodoForm({
           </select>
         </div>
 
-        <h1 className="font-bold text-lg">Subtask:</h1>
-        {subTodos.map((subTodo, index) => (
-          <div key={subTodo.id} className="flex flex-col gap-2 mb-2">
-            <input
-              {...register(`subTodos.${index}.title` as const)}
-              placeholder="Subtask title"
-              className="shadow-md"
-            />
-            <input
-              {...register(`subTodos.${index}.details` as const)}
-              placeholder="Subtask details"
-              className="shadow-md"
-            />
+        <h1 className="font-bold text-lg">Subtasks:</h1>
+        {subTodos.map((subTodo, index) => {
+          const isEmpty = !subTodo.title.trim() && !subTodo.details.trim();
 
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="bg-red-500 text-white px-2 rounded"
+          return (
+            <div
+              key={subTodo.id}
+              className="flex gap-2 mb-2 p-1 border rounded shadow-sm"
             >
-              ✕
-            </button>
-          </div>
-        ))}
+              {isEmpty ? (
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="text-red-500 font-bold w-5 h-5"
+                >
+                  ✕
+                </button>
+              ) : (
+                <input
+                  type="checkbox"
+                  checked={subTodo.status}
+                  onChange={() => {
+                    if (
+                      confirm(
+                        `Are you sure you want to mark "${subTodo.title}" as done? This will remove it.`
+                      )
+                    ) {
+                      remove(index);
+                    }
+                  }}
+                  className="w-5 h-5 mt-1"
+                />
+              )}
 
+              <div className="flex-1 flex flex-col">
+                <input
+                  {...register(`subTodos.${index}.title` as const)}
+                  placeholder="Subtask title"
+                  className="shadow-md p-1 rounded"
+                />
+                <input
+                  {...register(`subTodos.${index}.details` as const)}
+                  placeholder="Subtask details"
+                  className="shadow-md p-1 rounded mt-1"
+                />
+              </div>
+            </div>
+          );
+        })}
         <button
           type="button"
           onClick={() =>
@@ -180,7 +205,7 @@ export default function TodoForm({
           }
           className="mb-2 bg-green-500 text-white p-1 rounded"
         >
-          Add Subtask+
+          Add Subtask +
         </button>
 
         <div className="flex  gap-2">
