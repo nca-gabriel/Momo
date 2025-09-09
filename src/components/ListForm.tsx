@@ -56,24 +56,25 @@ export default function ListForm({ initialValues, onClose }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-2">
-      <input
-        {...register("name")}
-        placeholder="List Name"
-        className="w-full p-2 border rounded"
-      />
-      {errors.name && (
-        <p className="text-red-500 text-sm">{errors.name.message}</p>
-      )}
-
-      <input
-        type="color"
-        {...register("color")}
-        className="w-full h-10 p-1 border rounded"
-      />
-      {errors.color && (
-        <p className="text-red-500 text-sm">{errors.color.message}</p>
-      )}
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-2 p-1">
+      <section className="flex gap-1 border rounded p-0.5">
+        <input
+          type="color"
+          {...register("color")}
+          className="h-10 inline-block rounded-4xl"
+        />
+        {errors.color && (
+          <p className="text-red-500 text-sm">{errors.color.message}</p>
+        )}
+        <input
+          {...register("name")}
+          placeholder="List Name"
+          className="w-full p-2  "
+        />
+        {errors.name && (
+          <p className="text-red-500 text-sm">{errors.name.message}</p>
+        )}
+      </section>
 
       <div className="flex gap-2">
         <button

@@ -24,9 +24,10 @@ export default function Home() {
 
   return (
     <main className="">
-      <div className=" flex h-screen">
+      <div className=" flex h-screen  ">
         <main
-          className={`flex-1  transition-all duration-300 ${drawer ? "" : ""}`}
+          className={`flex-1  transition-all duration-300 mr-4 max-sm:mr-0
+          }`}
         >
           <h1 className="text-4xl font-semibold flex-1">Today!</h1>
           <div className="flex justify-end">
@@ -40,66 +41,70 @@ export default function Home() {
             </button>
           </div>
           <ul className="space-y-2">
-            {todos.map((todo) => {
-              const list = lists.find((l) => l.id === todo.ListId);
+            {todos.length === 0 ? (
+              <li className="p-2 text-gray-500 italic">No tasks yet</li>
+            ) : (
+              todos.map((todo) => {
+                const list = lists.find((l) => l.id === todo.ListId);
 
-              return (
-                <li
-                  key={todo.id}
-                  className="border-b-1 p-2 flex flex-col justify-between gap-2"
-                >
-                  <div className=" flex justify-between">
-                    <div className="flex gap-2">
-                      <input
-                        type="checkbox"
-                        checked={todo.status || false}
-                        onChange={(e) =>
-                          updateTodo(todo.id, {
-                            ...todo,
-                            status: e.target.checked,
-                          })
-                        }
-                      />
-                      <h2
-                        className={`font-bold ${
-                          todo.status ? "line-through text-gray-400" : ""
-                        }`}
-                      >
-                        {todo.title}
-                      </h2>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setEditingTodo(todo);
-                        setDrawer(true);
-                      }}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <section className="flex gap-2 ml-4">
-                    {list && (
-                      <div className="flex items-center gap-1">
-                        <span
-                          className="inline-block w-3 h-3 rounded-full "
-                          style={{ backgroundColor: list.color }}
+                return (
+                  <li
+                    key={todo.id}
+                    className="border-b-1 p-2 flex flex-col justify-between gap-2"
+                  >
+                    <div className="flex justify-between">
+                      <div className="flex gap-2">
+                        <input
+                          type="checkbox"
+                          checked={todo.status || false}
+                          onChange={(e) =>
+                            updateTodo(todo.id, {
+                              ...todo,
+                              status: e.target.checked,
+                            })
+                          }
                         />
-                        <span>{list.name}</span>
+                        <h2
+                          className={`font-bold ${
+                            todo.status ? "line-through text-gray-400" : ""
+                          }`}
+                        >
+                          {todo.title}
+                        </h2>
                       </div>
-                    )}
-                    <div className="flex items-center gap-1">
-                      <span>
-                        {new Date(todo.date).toLocaleDateString("en-GB", {
-                          month: "2-digit",
-                          day: "2-digit",
-                          year: "2-digit",
-                        })}
-                      </span>
+                      <button
+                        onClick={() => {
+                          setEditingTodo(todo);
+                          setDrawer(true);
+                        }}
+                      >
+                        Edit
+                      </button>
                     </div>
-                  </section>
-                </li>
-              );
-            })}
+                    <section className="flex gap-2 ml-4">
+                      {list && (
+                        <div className="flex items-center gap-1">
+                          <span
+                            className="inline-block w-3 h-3 rounded-full"
+                            style={{ backgroundColor: list.color }}
+                          />
+                          <span>{list.name}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <span>
+                          {new Date(todo.date).toLocaleDateString("en-GB", {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </section>
+                  </li>
+                );
+              })
+            )}
           </ul>
         </main>
 

@@ -35,8 +35,10 @@ export default function Sidebar() {
 
   return (
     <div
-      className={` flex h-screen flex-col justify-between border-e border-gray-100 bg-white transition-all duration-300 ${
-        showContent ? "w-[3rem]   max-sm:bg-transparent" : "w-[18rem]"
+      className={`flex h-screen flex-col justify-between border-e border-gray-100 bg-white transition-all duration-300 ${
+        showContent
+          ? "w-[4rem] max-sm:w-[3rem] max-sm:bg-transparent"
+          : "w-[18rem]"
       } max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:border-none`}
     >
       <section>
