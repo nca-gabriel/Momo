@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <AppProvider>
           <Sidebar />
-          <main className="ml-4 flex flex-1 flex-col py-4 max-sm:ml-0 max-sm:px-11">
+          <main className="ml-4 flex flex-1 flex-col py-4 max-sm:ml-0 max-sm:px-12">
             {children}
           </main>
         </AppProvider>

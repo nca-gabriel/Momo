@@ -61,7 +61,7 @@ export default function ListForm({ initialValues, onClose }: Props) {
         <input
           type="color"
           {...register("color")}
-          className="h-10 inline-block rounded-4xl"
+          className="h-10 w-10 rounded-sm cursor-pointer"
         />
         {errors.color && (
           <p className="text-red-500 text-sm">{errors.color.message}</p>
