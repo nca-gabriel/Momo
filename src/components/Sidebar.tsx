@@ -35,9 +35,9 @@ export default function Sidebar() {
 
   return (
     <div
-      className={` overflow-y-auto max-sm:overflow-y-auto flex h-screen flex-col justify-between border-e border-gray-100 transition-all duration-300 ${
+      className={`overflow-y-auto flex h-screen flex-col justify-between border-e border-gray-100 transition-all duration-300 ${
         showContent
-          ? "w-[4rem] max-sm:w-[3rem] max-sm:bg-white"
+          ? "w-[4rem] max-sm:w-[3rem] max-sm:bg-white overflow-y-hidden"
           : "w-[18rem] bg-gray-50"
       } max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:border-none`}
     >

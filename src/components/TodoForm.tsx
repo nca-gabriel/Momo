@@ -84,6 +84,14 @@ export default function TodoForm({
     }
   };
 
+  const formatLocalDateTime = (date?: Date) => {
+    if (!date) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  };
+
   return (
     <div className="z-10 w-80 bg-gray-50 shadow-lg p-4 border-e border-gray-200 transition-all duration-300 max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto ">
       <header className="flex justify-between mb-4">
@@ -123,11 +131,9 @@ export default function TodoForm({
           render={({ field }) => (
             <input
               type="datetime-local"
-              value={
-                field.value
-                  ? new Date(field.value).toISOString().slice(0, 16)
-                  : ""
-              }
+              value={formatLocalDateTime(
+                field.value ? new Date(field.value) : undefined
+              )}
               onChange={(e) => field.onChange(new Date(e.target.value))}
             />
           )}
