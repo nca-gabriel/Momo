@@ -3,16 +3,16 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useListContext } from "@/context/AppProvider";
-import ListForm from "./ListForm";
-import { listInput } from "@/utils/list/list.schema";
+import { useTagContext } from "@/context/AppProvider";
+import TagForm from "./TagForm";
+import { tagInput } from "@/utils/tag/tag.schema";
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [openList, setOpenList] = useState(false);
+  const [opentag, setOpentag] = useState(false);
   const pathname = usePathname();
-  const { lists } = useListContext();
-  const [editingList, setEditingList] = useState<listInput | null>(null);
+  const { tags } = useTagContext();
+  const [editingtag, setEditingtag] = useState<tagInput | null>(null);
 
   const navItems = [
     { href: "/", label: "Today" },
@@ -62,30 +62,30 @@ export default function Sidebar() {
                 ))}
               </ul>
             </nav>
-            {/* List */}
+            {/* tag */}
             <section className="px-4 py-6 ">
-              <p className="text-xs font-semibold text-gray-500">LISTS</p>
+              <p className="text-xs font-semibold text-gray-500">TAGS</p>
               <ul className="mt-2 space-y-1">
-                {lists.map((list) => (
-                  <li key={list.id}>
+                {tags.map((tag) => (
+                  <li key={tag.id}>
                     <div className="flex items-center justify-between">
                       <Link
-                        href={`/lists/${list.name}`}
+                        href={`/tags/${tag.name}`}
                         className="flex items-center gap-3 px-2 py-1 hover:bg-gray-100 rounded flex-1"
                       >
                         <span
                           className="w-5 h-5 rounded-sm"
-                          style={{ backgroundColor: list.color }}
+                          style={{ backgroundColor: tag.color }}
                         />
-                        <span>{list.name}</span>
+                        <span>{tag.name}</span>
                       </Link>
                       <button
                         onClick={() => {
-                          if (editingList?.id === list.id) {
-                            setOpenList((prev) => !prev);
+                          if (editingtag?.id === tag.id) {
+                            setOpentag((prev) => !prev);
                           } else {
-                            setEditingList(list);
-                            setOpenList(true);
+                            setEditingtag(tag);
+                            setOpentag(true);
                           }
                         }}
                         className="ml-2 px-2 py-1 text-sm text-gray-500 hover:text-black"
@@ -98,22 +98,22 @@ export default function Sidebar() {
                 <li>
                   <button
                     onClick={() => {
-                      setEditingList(null);
-                      setOpenList((prev) => !prev);
+                      setEditingtag(null);
+                      setOpentag((prev) => !prev);
                     }}
                     className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                   >
-                    + Add a new list
+                    + Add a new tag
                   </button>
                 </li>
 
-                {openList && (
+                {opentag && (
                   <div className="p-2 mt-2">
-                    <ListForm
-                      initialValues={editingList}
+                    <TagForm
+                      initialValues={editingtag}
                       onClose={() => {
-                        setOpenList(false);
-                        setEditingList(null);
+                        setOpentag(false);
+                        setEditingtag(null);
                       }}
                     />
                   </div>

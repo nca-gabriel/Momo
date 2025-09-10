@@ -2,21 +2,21 @@
 
 import React, { createContext, useContext, ReactNode } from "react";
 import { useTodos } from "@/hooks/useTodos";
-import { useLists } from "@/hooks/useLists";
+import { useTags } from "@/hooks/useTags";
 
 type TodoContextType = ReturnType<typeof useTodos>;
-type ListContextType = ReturnType<typeof useLists>;
+type TagContextType = ReturnType<typeof useTags>;
 
 const TodoContext = createContext<TodoContextType | null>(null);
-const ListContext = createContext<ListContextType | null>(null);
+const TagContext = createContext<TagContextType | null>(null);
 
 export default function AppProvider({ children }: { children: ReactNode }) {
   const todos = useTodos();
-  const lists = useLists();
+  const tags = useTags();
 
   return (
     <TodoContext.Provider value={todos}>
-      <ListContext.Provider value={lists}>{children}</ListContext.Provider>
+      <TagContext.Provider value={tags}>{children}</TagContext.Provider>
     </TodoContext.Provider>
   );
 }
@@ -28,8 +28,8 @@ export function useTodoContext() {
   return ctx;
 }
 
-export function useListContext() {
-  const ctx = useContext(ListContext);
-  if (!ctx) throw new Error("useListContext must be used within AppProvider");
+export function useTagContext() {
+  const ctx = useContext(TagContext);
+  if (!ctx) throw new Error("usetagContext must be used within AppProvider");
   return ctx;
 }

@@ -1,14 +1,14 @@
 "use client";
 
 import TodoForm from "../components/TodoForm";
-import { useListContext, useTodoContext } from "@/context/AppProvider";
+import { useTagContext, useTodoContext } from "@/context/AppProvider";
 import { useState, useEffect } from "react";
 import { todoInput } from "@/utils/todo/todo.schema";
 import Image from "next/image";
 
 export default function Home() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext();
-  const { lists } = useListContext();
+  const { tags } = useTagContext();
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<todoInput | null>(null);
   const [ready, setReady] = useState(false);
@@ -17,8 +17,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log("lists updated", lists);
-  }, [lists]);
+    console.log("tags updated", tags);
+  }, [tags]);
 
   if (!ready) return null; // or a loading fallback
 
@@ -60,7 +60,7 @@ export default function Home() {
             todos
               .filter((todo) => todo.date && isToday(todo.date))
               .map((todo) => {
-                const list = lists.find((l) => l.id === todo.ListId);
+                const tag = tags.find((l) => l.id === todo.tagId);
                 return (
                   <li
                     key={todo.id}
@@ -125,13 +125,13 @@ export default function Home() {
                           <span>Subtask</span>
                         </div>
                       )}
-                      {list && (
+                      {tag && (
                         <div className="flex items-center gap-2">
                           <span
                             className="inline-block w-5 h-5 rounded-sm"
-                            style={{ backgroundColor: list.color }}
+                            style={{ backgroundColor: tag.color }}
                           />
-                          <span>{list.name}</span>
+                          <span>{tag.name}</span>
                         </div>
                       )}
                     </section>

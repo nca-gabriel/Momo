@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useListContext, useTodoContext } from "@/context/AppProvider";
+import { useTagContext, useTodoContext } from "@/context/AppProvider";
 import Image from "next/image";
 import TodoForm from "../../components/TodoForm";
 import { todoInput } from "@/utils/todo/todo.schema";
 
 export default function Upcoming() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext();
-  const { lists } = useListContext();
+  const { tags } = useTagContext();
 
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<todoInput | null>(null);
@@ -45,15 +45,15 @@ export default function Upcoming() {
   }, []);
 
   if (!ready) return null;
-  const renderList = (title: string, list: typeof todos) => (
+  const rendertag = (title: string, tag: typeof todos) => (
     <div className="flex flex-col flex-1 min-h-full w-full">
       <h2 className="text-2xl font-semibold mb-2">{title}</h2>
       <ul className="gap-2">
-        {list.length === 0 ? (
+        {tag.length === 0 ? (
           <li className="p-2 text-gray-500">No tasks</li>
         ) : (
-          list.map((todo) => {
-            const listData = lists.find((l) => l.id === todo.ListId);
+          tag.map((todo) => {
+            const tagData = tags.find((l) => l.id === todo.tagId);
             return (
               <li
                 key={todo.id}
@@ -117,13 +117,13 @@ export default function Upcoming() {
                       <span>Subtasks</span>
                     </div>
                   )}
-                  {listData && (
+                  {tagData && (
                     <div className="flex items-center gap-2">
                       <span
                         className="inline-block w-4 h-4 rounded-sm"
-                        style={{ backgroundColor: listData.color }}
+                        style={{ backgroundColor: tagData.color }}
                       />
-                      <span>{listData.name}</span>
+                      <span>{tagData.name}</span>
                     </div>
                   )}
                 </div>
@@ -143,15 +143,15 @@ export default function Upcoming() {
         </header>
 
         <div className="mb-6 border border-gray-200 p-2 rounded">
-          {renderList("Today", todayTodos)}
+          {rendertag("Today", todayTodos)}
         </div>
 
         <div className="flex flex-wrap gap-6">
           <div className="flex-1 border border-gray-200 p-2 rounded">
-            {renderList("Tomorrow", tomorrowTodos)}
+            {rendertag("Tomorrow", tomorrowTodos)}
           </div>
           <div className="flex-1 border border-gray-200 p-2 rounded">
-            {renderList("This Week", thisWeekTodos)}
+            {rendertag("This Week", thisWeekTodos)}
           </div>
         </div>
       </div>

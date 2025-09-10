@@ -4,7 +4,7 @@ import { todoSchema, type todoInput } from "../utils/todo/todo.schema";
 import { useEffect } from "react";
 import type { Resolver } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { useListContext } from "@/context/AppProvider";
+import { useTagContext } from "@/context/AppProvider";
 
 type Props = {
   open: boolean;
@@ -35,7 +35,7 @@ export default function TodoForm({
       details: "",
       date: new Date(),
       subTodos: [],
-      ListId: undefined,
+      tagId: undefined,
     },
   });
 
@@ -49,7 +49,7 @@ export default function TodoForm({
     name: "subTodos",
   });
 
-  const { lists } = useListContext();
+  const { tags } = useTagContext();
 
   // update form when initialValues changes
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function TodoForm({
         details: "",
         date: new Date(),
         status: false,
-        ListId: undefined,
+        tagId: undefined,
         subTodos: [],
       }
     );
@@ -81,7 +81,7 @@ export default function TodoForm({
         date: new Date(),
         status: false,
         subTodos: [],
-        ListId: undefined,
+        tagId: undefined,
       });
     }
   };
@@ -147,19 +147,17 @@ export default function TodoForm({
         />
 
         <div className="flex flex-col gap-2">
-          <label className="font-semibold">List:</label>
-          <select {...register("ListId")} className="shadow-md p-2 rounded-md">
-            <option value="00000000-0000-0000-0000-000000000000">
-              No list
-            </option>
-            {lists.map((list) => (
-              <option key={list.id} value={list.id}>
-                {list.name}
+          <label className="font-semibold">tag:</label>
+          <select {...register("tagId")} className="shadow-md p-2 rounded-md">
+            <option value="00000000-0000-0000-0000-000000000000">No tag</option>
+            {tags.map((tag) => (
+              <option key={tag.id} value={tag.id}>
+                {tag.name}
               </option>
             ))}
           </select>
-          {errors.ListId && (
-            <span className="text-red-500">{errors.ListId.message}</span>
+          {errors.tagId && (
+            <span className="text-red-500">{errors.tagId.message}</span>
           )}
         </div>
 

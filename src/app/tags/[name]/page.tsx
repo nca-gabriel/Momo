@@ -1,20 +1,20 @@
 "use client";
 
 import TodoForm from "@/components/TodoForm";
-import { useListContext, useTodoContext } from "@/context/AppProvider";
+import { useTagContext, useTodoContext } from "@/context/AppProvider";
 import { useState, useEffect } from "react";
 import { todoInput } from "@/utils/todo/todo.schema";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 
-export default function ListPage() {
+export default function TagPage() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext();
-  const { lists } = useListContext();
+  const { tags } = useTagContext();
 
   const params = useParams();
-  const listName = params.name;
-  const list = lists.find((l) => l.name === listName);
-  const listTodos = todos.filter((todo) => todo.ListId === list?.id);
+  const tagName = params.name;
+  const tag = tags.find((l) => l.name === tagName);
+  const tagTodos = todos.filter((todo) => todo.tagId === tag?.id);
 
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<todoInput | null>(null);
@@ -23,7 +23,7 @@ export default function ListPage() {
   useEffect(() => setReady(true), []);
 
   if (!ready) return null;
-  if (!list) return <p>List not found</p>;
+  if (!tag) return <p>tag not found</p>;
 
   return (
     <main className="flex w-full min-h-full p-4">
@@ -32,9 +32,9 @@ export default function ListPage() {
           <h1 className="text-4xl font-semibold flex items-center gap-2">
             <span
               className="w-8 h-8 rounded-sm"
-              style={{ backgroundColor: list.color }}
+              style={{ backgroundColor: tag.color }}
             />
-            {list.name}
+            {tag.name}
           </h1>
           <div className="flex justify-end">
             <button
@@ -51,10 +51,10 @@ export default function ListPage() {
         </header>
 
         <ul className="space-y-2">
-          {listTodos.length === 0 ? (
+          {tagTodos.length === 0 ? (
             <li className="p-2 text-gray-500">No tasks yet</li>
           ) : (
-            listTodos.map((todo) => (
+            tagTodos.map((todo) => (
               <li
                 key={todo.id}
                 className={`border-b border-gray-200 p-1.5 ${
@@ -136,7 +136,7 @@ export default function ListPage() {
             if (editingTodo) {
               updateTodo(editingTodo.id, data);
             } else {
-              addTodo({ ...data, ListId: list.id });
+              addTodo({ ...data, tagId: tag.id });
             }
           }}
           onDelete={(id) => deleteTodo(id)}

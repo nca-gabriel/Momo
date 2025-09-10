@@ -1,17 +1,17 @@
-import type { ListState } from "./list.schema";
-import { ListAction } from "./list.action";
+import type { tagState } from "./tag.schema";
+import { tagAction } from "./tag.action";
 
-export function listReducer(state: ListState, action: ListAction): ListState {
+export function tagReducer(state: tagState, action: tagAction): tagState {
   switch (action.type) {
-    case "INIT_LISTS":
+    case "INIT_TAGS":
       return action.payload;
-    case "ADD_LIST":
+    case "ADD_TAG":
       return [...state, action.payload];
-    case "UPDATE_LIST":
+    case "UPDATE_TAG":
       return state.map((tag) =>
         tag.id === action.payload.id ? { ...tag, ...action.payload.data } : tag
       );
-    case "DELETE_LIST":
+    case "DELETE_TAG":
       return state.filter((tag) => tag.id !== action.payload.id);
     default:
       return state;
