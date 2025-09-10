@@ -28,7 +28,7 @@ export default function Sidebar() {
   return (
     <div
       className={`h-screen border-r border-gray-100  transition-all duration-300 ${
-        collapsed ? "w-16 " : "w-72 bg-gray-50"
+        collapsed ? "w-16 max-sm:w-11 " : "w-72 bg-gray-50"
       } shrink-0 flex flex-col`}
     >
       {/* Header */}

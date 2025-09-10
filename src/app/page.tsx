@@ -64,12 +64,12 @@ export default function Home() {
                 return (
                   <li
                     key={todo.id}
-                    className={`border-b border-gray-200 p-1.5 ${
+                    className={`border-b border-gray-200 p-2 cursor-pointer  ${
                       todo.status ? "opacity-50" : ""
                     }`}
                   >
                     {/* rows */}
-                    <section className="flex justify-between">
+                    <section className="flex justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -104,20 +104,18 @@ export default function Home() {
                       </button>
                     </section>
                     <section className=" flex flex-wrap gap-5 ml-5">
-                      <div className="flex items-center">
-                        <span className="flex gap-2">
-                          <Image
-                            src="/calendar.png"
-                            alt="calendar-icon"
-                            width={24}
-                            height={24}
-                          />
-                          {new Date(todo.date).toLocaleDateString("en-GB", {
-                            month: "2-digit",
-                            day: "2-digit",
-                            year: "2-digit",
-                          })}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src="/calendar.png"
+                          alt="calendar"
+                          width={18}
+                          height={18}
+                        />
+                        {new Date(todo.date).toLocaleDateString("en-GB", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "2-digit",
+                        })}
                       </div>
                       {todo.subTodos.length > 0 && (
                         <div className="flex items-center gap-2">

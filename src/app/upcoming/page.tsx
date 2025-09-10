@@ -65,7 +65,7 @@ export default function Upcoming() {
                   setDrawer(true);
                 }}
               >
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -86,7 +86,14 @@ export default function Upcoming() {
                       {todo.title}
                     </h3>
                   </div>
-                  <Image src="/arrow.png" alt="arrow" width={15} height={15} />
+                  <button>
+                    <Image
+                      src="/arrow.png"
+                      alt="arrow"
+                      width={15}
+                      height={15}
+                    />
+                  </button>
                 </div>
                 <div className="flex flex-wrap gap-5 ml-5 mt-1 text-sm">
                   <div className="flex items-center gap-2">

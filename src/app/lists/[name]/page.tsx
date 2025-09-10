@@ -28,25 +28,6 @@ export default function ListPage() {
   return (
     <main className="flex w-full min-h-full p-4">
       <div className="flex flex-col flex-1 min-h-full">
-        {/* <header className="flex items-center justify-between mb-6">
-          <h1 className="text-4xl font-semibold flex items-center gap-2">
-            <span
-              className="w-8 h-8 rounded-sm"
-              style={{ backgroundColor: list.color }}
-            />
-            {list.name}
-          </h1>
-          <button
-            onClick={() => {
-              setDrawer(true);
-              setEditingTodo(null);
-            }}
-            className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer"
-          >
-            <span className="text-lg">+</span>
-            <span>Add</span>
-          </button>
-        </header> */}
         <header className="">
           <h1 className="text-4xl font-semibold flex items-center gap-2">
             <span
@@ -80,7 +61,7 @@ export default function ListPage() {
                   todo.status ? "opacity-50" : ""
                 }`}
               >
-                <section className="flex justify-between">
+                <section className="flex justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -114,18 +95,17 @@ export default function ListPage() {
                     />
                   </button>
                 </section>
-
-                <section className="flex flex-wrap gap-5 ml-5 mt-1 text-sm">
+                <section className=" flex flex-wrap gap-5 ml-5">
                   <div className="flex items-center gap-2">
                     <Image
                       src="/calendar.png"
                       alt="calendar"
-                      width={24}
-                      height={24}
+                      width={18}
+                      height={18}
                     />
                     {new Date(todo.date).toLocaleDateString("en-GB", {
-                      day: "2-digit",
                       month: "2-digit",
+                      day: "2-digit",
                       year: "2-digit",
                     })}
                   </div>
@@ -135,15 +115,6 @@ export default function ListPage() {
                         {todo.subTodos.length}
                       </span>
                       <span>Subtask</span>
-                    </div>
-                  )}
-                  {list && (
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="inline-block w-5 h-5 rounded-sm"
-                        style={{ backgroundColor: list.color }}
-                      />
-                      <span>{list.name}</span>
                     </div>
                   )}
                 </section>
