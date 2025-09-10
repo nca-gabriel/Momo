@@ -9,7 +9,6 @@ import Image from "next/image";
 export default function Home() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext();
   const { lists } = useListContext();
-
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<todoInput | null>(null);
   const [ready, setReady] = useState(false);
@@ -104,7 +103,7 @@ export default function Home() {
                         />
                       </button>
                     </section>
-                    <section className=" flex flex-wrap gap-5 ml-4">
+                    <section className=" flex flex-wrap gap-5 ml-5">
                       <div className="flex items-center">
                         <span className="flex gap-2">
                           <Image
