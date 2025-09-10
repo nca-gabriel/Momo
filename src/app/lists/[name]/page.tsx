@@ -4,128 +4,173 @@ import TodoForm from "@/components/TodoForm";
 import { useListContext, useTodoContext } from "@/context/AppProvider";
 import { useState, useEffect } from "react";
 import { todoInput } from "@/utils/todo/todo.schema";
-import { useParams } from "next/navigation"; // App Router
+import Image from "next/image";
+import { useParams } from "next/navigation";
 
 export default function ListPage() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext();
   const { lists } = useListContext();
 
-  const params = useParams(); // { name: string }
+  const params = useParams();
   const listName = params.name;
-
   const list = lists.find((l) => l.name === listName);
-
   const listTodos = todos.filter((todo) => todo.ListId === list?.id);
 
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<todoInput | null>(null);
   const [ready, setReady] = useState(false);
-  useEffect(() => {
-    setReady(true);
-  }, []);
+
+  useEffect(() => setReady(true), []);
 
   if (!ready) return null;
   if (!list) return <p>List not found</p>;
 
   return (
-    <div className="flex flex-1">
-      <main className="ml-4 pl-5 py-5 flex flex-1 flex-col">
-        <h1 className="text-4xl font-semibold flex items-center gap-2">
-          <span
-            className="w-4 h-4 rounded-full"
-            style={{ backgroundColor: list.color }}
-          />
-          {list.name}
-        </h1>
-
-        <div className="flex h-screen">
-          <main className="flex-1 p-4">
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => {
-                  setDrawer(true);
-                  setEditingTodo(null);
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-              >
-                Add
-              </button>
-            </div>
-
-            <ul className="space-y-2">
-              {listTodos.map((todo) => (
-                <li
-                  key={todo.id}
-                  className="border-b-1 p-2 flex flex-col justify-between gap-2"
-                >
-                  <div className="flex justify-between">
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="checkbox"
-                        checked={todo.status || false}
-                        onChange={(e) =>
-                          updateTodo(todo.id, {
-                            ...todo,
-                            status: e.target.checked,
-                          })
-                        }
-                      />
-                      <h2
-                        className={`font-bold ${
-                          todo.status ? "line-through text-gray-400" : ""
-                        }`}
-                      >
-                        {todo.title}
-                      </h2>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setEditingTodo(todo);
-                        setDrawer(true);
-                      }}
-                      className="px-2 py-1 bg-gray-200 rounded"
-                    >
-                      Edit
-                    </button>
-                  </div>
-
-                  <div className="flex gap-2 mt-1">
-                    <span>
-                      {new Date(todo.date).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </li>
-              ))}
-
-              {listTodos.length === 0 && <li>No todos in this list</li>}
-            </ul>
-          </main>
-
-          {drawer && (
-            <TodoForm
-              initialValues={editingTodo}
-              onClose={() => {
-                setEditingTodo(null);
-                setDrawer(false);
-              }}
-              onSubmit={(data) => {
-                if (editingTodo) {
-                  updateTodo(editingTodo.id, data);
-                } else {
-                  addTodo({ ...data, ListId: list.id });
-                }
-              }}
-              onDelete={(id) => {
-                deleteTodo(id);
-              }}
+    <main className="flex w-full min-h-full p-4">
+      <div className="flex flex-col flex-1 min-h-full">
+        {/* <header className="flex items-center justify-between mb-6">
+          <h1 className="text-4xl font-semibold flex items-center gap-2">
+            <span
+              className="w-8 h-8 rounded-sm"
+              style={{ backgroundColor: list.color }}
             />
+            {list.name}
+          </h1>
+          <button
+            onClick={() => {
+              setDrawer(true);
+              setEditingTodo(null);
+            }}
+            className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer"
+          >
+            <span className="text-lg">+</span>
+            <span>Add</span>
+          </button>
+        </header> */}
+        <header className="">
+          <h1 className="text-4xl font-semibold flex items-center gap-2">
+            <span
+              className="w-8 h-8 rounded-sm"
+              style={{ backgroundColor: list.color }}
+            />
+            {list.name}
+          </h1>
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                setDrawer(true);
+                setEditingTodo(null);
+              }}
+              className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer"
+            >
+              <span className="text-lg">+</span>
+              <span>Add</span>
+            </button>
+          </div>
+        </header>
+
+        <ul className="space-y-2">
+          {listTodos.length === 0 ? (
+            <li className="p-2 text-gray-500">No tasks yet</li>
+          ) : (
+            listTodos.map((todo) => (
+              <li
+                key={todo.id}
+                className={`border-b border-gray-200 p-1.5 ${
+                  todo.status ? "opacity-50" : ""
+                }`}
+              >
+                <section className="flex justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={todo.status || false}
+                      onChange={(e) =>
+                        updateTodo(todo.id, {
+                          ...todo,
+                          status: e.target.checked,
+                        })
+                      }
+                    />
+                    <h2
+                      className={`font-bold ${
+                        todo.status ? "line-through text-gray-400" : ""
+                      }`}
+                    >
+                      {todo.title}
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setEditingTodo(todo);
+                      setDrawer(true);
+                    }}
+                  >
+                    <Image
+                      src="/arrow.png"
+                      alt="arrow"
+                      width={15}
+                      height={15}
+                    />
+                  </button>
+                </section>
+
+                <section className="flex flex-wrap gap-5 ml-5 mt-1 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src="/calendar.png"
+                      alt="calendar"
+                      width={24}
+                      height={24}
+                    />
+                    {new Date(todo.date).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                    })}
+                  </div>
+                  {todo.subTodos.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gray-100 text-center w-5 font-light rounded">
+                        {todo.subTodos.length}
+                      </span>
+                      <span>Subtask</span>
+                    </div>
+                  )}
+                  {list && (
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="inline-block w-5 h-5 rounded-sm"
+                        style={{ backgroundColor: list.color }}
+                      />
+                      <span>{list.name}</span>
+                    </div>
+                  )}
+                </section>
+              </li>
+            ))
           )}
-        </div>
-      </main>
-    </div>
+        </ul>
+      </div>
+
+      {drawer && (
+        <TodoForm
+          open={drawer}
+          initialValues={editingTodo}
+          onClose={() => {
+            setEditingTodo(null);
+            setDrawer(false);
+          }}
+          onSubmit={(data) => {
+            if (editingTodo) {
+              updateTodo(editingTodo.id, data);
+            } else {
+              addTodo({ ...data, ListId: list.id });
+            }
+          }}
+          onDelete={(id) => deleteTodo(id)}
+        />
+      )}
+    </main>
   );
 }
