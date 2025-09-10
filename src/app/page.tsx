@@ -34,11 +34,11 @@ export default function Home() {
   };
 
   return (
-    <main className="">
-      <div className=" flex h-screen ">
-        <main className="flex-1 mr-4 max-sm:mr-0 ">
-          <h1 className="text-4xl font-semibold flex-1  ">Today!</h1>
-          <div className="flex justify-end my-3 max-sm:mb-0">
+    <main className="flex  w-full min-h-full p-4">
+      <div className="flex flex-col flex-1 min-h-full">
+        <header className="">
+          <h1 className="text-4xl font-semibold">Today!</h1>
+          <div className="flex justify-end">
             <button
               onClick={() => {
                 setDrawer(true);
@@ -50,119 +50,122 @@ export default function Home() {
               <span>Add</span>
             </button>
           </div>
-          <ul className="space-y-1">
-            {todos.filter((todo) => todo.date && isToday(todo.date)).length ===
-            0 ? (
-              <li className="p-2 text-gray-500 italic">No tasks yet</li>
-            ) : (
-              todos
-                .filter((todo) => todo.date && isToday(todo.date))
-                .map((todo) => {
-                  const list = lists.find((l) => l.id === todo.ListId);
-                  if (todo.date)
-                    return (
-                      <li
-                        key={todo.id}
-                        className={`border-b border-gray-200 p-2 flex flex-col justify-between gap-2 ${
-                          todo.status ? "opacity-50" : ""
-                        }`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex gap-2">
-                            <input
-                              type="checkbox"
-                              checked={todo.status || false}
-                              onChange={(e) =>
-                                updateTodo(todo.id, {
-                                  ...todo,
-                                  status: e.target.checked,
-                                })
-                              }
-                            />
-                            <h2
-                              className={`font-bold ${
-                                todo.status ? "line-through text-gray-400" : ""
-                              }`}
-                            >
-                              {todo.title}
-                            </h2>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setEditingTodo(todo);
-                              setDrawer(true);
-                            }}
-                          >
-                            <Image
-                              src="/arrow.png"
-                              alt="arrow"
-                              width={15}
-                              height={15}
-                            />
-                          </button>
-                        </div>
-                        <section className="flex gap-5 ml-4">
-                          <div className="flex items-center">
-                            <span className="flex gap-2">
-                              <Image
-                                src="/calendar.png"
-                                alt="calendar-icon"
-                                width={24}
-                                height={24}
-                              />
-                              {new Date(todo.date).toLocaleDateString("en-GB", {
-                                month: "2-digit",
-                                day: "2-digit",
-                                year: "2-digit",
-                              })}
-                            </span>
-                          </div>
-                          {todo.subTodos.length > 0 && (
-                            <div className="gap-2 flex">
-                              <span className="bg-gray-100 px-2 py-0.3 font-light rounded">
-                                {todo.subTodos.length}
-                              </span>
-                              <span>Subtask</span>
-                            </div>
-                          )}
-                          {list && (
-                            <div className="flex items-center gap-3">
-                              <span
-                                className="inline-block w-5 h-5 rounded-sm"
-                                style={{ backgroundColor: list.color }}
-                              />
-                              <span>{list.name}</span>
-                            </div>
-                          )}
-                        </section>
-                      </li>
-                    );
-                })
-            )}
-          </ul>
-        </main>
+        </header>
 
-        {/* drawer */}
-        {drawer && (
-          <TodoForm
-            initialValues={editingTodo}
-            onClose={() => {
-              setEditingTodo(null);
-              setDrawer(false);
-            }}
-            onSubmit={(data) => {
-              if (editingTodo) {
-                updateTodo(editingTodo.id, data);
-              } else {
-                addTodo(data);
-              }
-            }}
-            onDelete={(id) => {
-              deleteTodo(id);
-            }}
-          />
-        )}
+        {/* Todos */}
+        <ul className=" gap-2">
+          {todos.filter((todo) => todo.date && isToday(todo.date)).length ===
+          0 ? (
+            <li className="p-2 text-gray-500">No tasks yet</li>
+          ) : (
+            todos
+              .filter((todo) => todo.date && isToday(todo.date))
+              .map((todo) => {
+                const list = lists.find((l) => l.id === todo.ListId);
+                return (
+                  <li
+                    key={todo.id}
+                    className={`border-b border-gray-200 p-1.5 ${
+                      todo.status ? "opacity-50" : ""
+                    }`}
+                  >
+                    {/* rows */}
+                    <section className="flex justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={todo.status || false}
+                          onChange={(e) =>
+                            updateTodo(todo.id, {
+                              ...todo,
+                              status: e.target.checked,
+                            })
+                          }
+                        />
+                        <h2
+                          className={`font-bold ${
+                            todo.status ? "line-through text-gray-400" : ""
+                          }`}
+                        >
+                          {todo.title}
+                        </h2>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setEditingTodo(todo);
+                          setDrawer(true);
+                        }}
+                      >
+                        <Image
+                          src="/arrow.png"
+                          alt="arrow"
+                          width={15}
+                          height={15}
+                        />
+                      </button>
+                    </section>
+                    <section className=" flex flex-wrap gap-5 ml-4">
+                      <div className="flex items-center">
+                        <span className="flex gap-2">
+                          <Image
+                            src="/calendar.png"
+                            alt="calendar-icon"
+                            width={24}
+                            height={24}
+                          />
+                          {new Date(todo.date).toLocaleDateString("en-GB", {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      {todo.subTodos.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="bg-gray-100 text-center w-5 font-light rounded">
+                            {todo.subTodos.length}
+                          </span>
+                          <span>Subtask</span>
+                        </div>
+                      )}
+                      {list && (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="inline-block w-5 h-5 rounded-sm"
+                            style={{ backgroundColor: list.color }}
+                          />
+                          <span>{list.name}</span>
+                        </div>
+                      )}
+                    </section>
+                  </li>
+                );
+              })
+          )}
+        </ul>
       </div>
+
+      {/* drawer */}
+      {drawer && (
+        <TodoForm
+          open={drawer}
+          initialValues={editingTodo}
+          onClose={() => {
+            setEditingTodo(null);
+            setDrawer(false);
+          }}
+          onSubmit={(data) => {
+            if (editingTodo) {
+              updateTodo(editingTodo.id, data);
+            } else {
+              addTodo(data);
+            }
+          }}
+          onDelete={(id) => {
+            deleteTodo(id);
+          }}
+        />
+      )}
     </main>
   );
 }

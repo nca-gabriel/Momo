@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,21 +10,9 @@ import { listInput } from "@/utils/list/list.schema";
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [openList, setOpenList] = useState(false);
-  const [showContent, setShowContent] = useState(true);
   const pathname = usePathname();
   const { lists } = useListContext();
   const [editingList, setEditingList] = useState<listInput | null>(null);
-
-  useEffect(() => {
-    if (collapsed) {
-      // Hide content after width transition ends
-      const t = setTimeout(() => setShowContent(false), 150);
-      return () => clearTimeout(t);
-    } else {
-      // Show content immediately when expanding
-      setShowContent(true);
-    }
-  }, [collapsed]);
 
   const navItems = [
     { href: "/", label: "Today" },
@@ -35,35 +23,25 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`overflow-y-auto flex h-screen flex-col justify-between border-e border-gray-100 transition-all duration-300 ${
-        showContent
-          ? "w-[4rem] max-sm:w-[3rem] max-sm:bg-white overflow-y-hidden"
-          : "w-[18rem] bg-gray-50"
-      } max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:border-none`}
+      className={`h-screen border-r border-gray-100  transition-all duration-300 ${
+        collapsed ? "w-16 " : "w-72 bg-gray-50"
+      } shrink-0 flex flex-col`}
     >
-      <section>
-        <div className="px-4 py-6 mb-10 ">
-          <div
-            className={`flex mb-5 ${
-              !showContent ? "justify-between" : "justify-center"
-            }`}
-          >
-            {!showContent && <p>Menu</p>}
-            <button onClick={() => setCollapsed(!collapsed)}>
-              <Image
-                src="/burger.svg"
-                alt="burger-icon"
-                width={24}
-                height={24}
-                className=""
-              />
-            </button>
-          </div>
+      {/* Header */}
+      <section className="flex items-center justify-between p-4">
+        {!collapsed && <p className="font-bold">Menu</p>}
+        <button onClick={() => setCollapsed(!collapsed)}>
+          <Image src="/burger.svg" alt="burger-icon" width={24} height={24} />
+        </button>
+      </section>
 
-          {!showContent && (
-            <>
-              <p>TASKS</p>
-              <ul className="mt-6 space-y-1">
+      {!collapsed && (
+        <>
+          <div className="flex-1 overflow-y-auto">
+            {/* Nav */}
+            <nav className=" flex-1">
+              <p className="px-4 text-xs font-semibold text-gray-500">TASKS</p>
+              <ul className="mt-2 space-y-1">
                 {navItems.map(({ href, label }) => (
                   <li key={href}>
                     <Link
@@ -79,23 +57,17 @@ export default function Sidebar() {
                   </li>
                 ))}
               </ul>
-            </>
-          )}
-        </div>
-
-        {/* here */}
-        <div className="px-4 py-6">
-          {!showContent && (
-            <>
-              <p>LISTS</p>
-              <ul className="mt-6 space-y-1">
+            </nav>
+            {/* List */}
+            <section className="px-4 py-6 ">
+              <p className="text-xs font-semibold text-gray-500">LISTS</p>
+              <ul className="mt-2 space-y-1">
                 {lists.map((list) => (
                   <li key={list.id}>
                     <div className="flex items-center justify-between">
-                      {/* Navigation */}
                       <Link
                         href={`/lists/${list.name}`}
-                        className="flex items-center gap-4 px-2 py-1 hover:bg-gray-100 rounded flex-1"
+                        className="flex items-center gap-3 px-2 py-1 hover:bg-gray-100 rounded flex-1"
                       >
                         <span
                           className="w-5 h-5 rounded-sm"
@@ -103,8 +75,6 @@ export default function Sidebar() {
                         />
                         <span>{list.name}</span>
                       </Link>
-
-                      {/* Edit button */}
                       <button
                         onClick={() => {
                           if (editingList?.id === list.id) {
@@ -121,7 +91,6 @@ export default function Sidebar() {
                     </div>
                   </li>
                 ))}
-
                 <li>
                   <button
                     onClick={() => {
@@ -146,34 +115,23 @@ export default function Sidebar() {
                   </div>
                 )}
               </ul>
-            </>
-          )}
-        </div>
-      </section>
-
-      {!showContent && (
-        <div className="sticky inset-x-0 bottom-0 border-t border-gray-100">
-          <a
-            href="#"
-            className="flex items-center gap-2 bg-white p-4 hover:bg-gray-50"
-          >
+            </section>
+          </div>
+          {/* footer */}
+          <div className="border-t border-gray-200 p-4 flex items-center gap-2">
             <Image
               alt="Profile"
               src="/vercel.svg"
-              width={40}
-              height={40}
+              width={32}
+              height={32}
               className="rounded-full object-cover"
             />
-
             <div>
-              <p className="text-xs">
-                <strong className="block font-medium">Eric Frusciante</strong>
-
-                <span> eric@frusciante.com </span>
-              </p>
+              <p className="text-sm font-medium">Eric Frusciante</p>
+              <p className="text-xs text-gray-500">eric@frusciante.com</p>
             </div>
-          </a>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

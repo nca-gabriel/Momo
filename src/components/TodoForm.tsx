@@ -7,6 +7,7 @@ import { Controller } from "react-hook-form";
 import { useListContext } from "@/context/AppProvider";
 
 type Props = {
+  open: boolean;
   initialValues: todoInput | null;
   onClose: () => void;
   onSubmit: (data: todoInput) => void;
@@ -15,6 +16,7 @@ type Props = {
 
 // TodoForm.tsx
 export default function TodoForm({
+  open,
   initialValues,
   onClose,
   onSubmit,
@@ -93,7 +95,11 @@ export default function TodoForm({
   };
 
   return (
-    <div className="z-10 w-80 bg-gray-50 shadow-lg p-4 border-e border-gray-200 transition-all duration-300 max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto ">
+    <div
+      className={`z-10  ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200   max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto transition-all duration-300 ${
+        open ? "w-70" : ""
+      }`}
+    >
       <header className="flex justify-between mb-4">
         <h1 className="font-bold text-lg">Task:</h1>
         <button
@@ -135,6 +141,7 @@ export default function TodoForm({
                 field.value ? new Date(field.value) : undefined
               )}
               onChange={(e) => field.onChange(new Date(e.target.value))}
+              className="w-full rounded-md  p-2 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 my-2"
             />
           )}
         />
@@ -163,7 +170,7 @@ export default function TodoForm({
           return (
             <div
               key={subTodo.id}
-              className="flex gap-2 mb-2 p-1 border rounded shadow-sm"
+              className=" flex flex-col sm:flex-row gap-2 mb-2 p-1 rounded shadow-sm"
             >
               {isEmpty ? (
                 <button
