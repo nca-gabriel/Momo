@@ -170,17 +170,17 @@ export default function Sidebar() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 p-4 flex items-center gap-2">
+          <div className="border-t border-gray-200 p-4 flex items-center gap-2 ">
             <Image
               alt="Profile"
-              src="/vercel.svg"
+              src="/pfp.png"
               width={32}
               height={32}
               className="rounded-full object-cover"
             />
             <div>
-              <p className="text-sm font-medium">Eric Frusciante</p>
-              <p className="text-xs text-gray-500">eric@frusciante.com</p>
+              <p className="text-sm font-medium">Neil Christian A. Gabriel</p>
+              <p className="text-xs text-gray-500">ncagabriel02@gmail.com</p>
             </div>
           </div>
         </>
