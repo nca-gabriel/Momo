@@ -134,16 +134,27 @@ export default function TodoForm({
         <Controller
           control={control}
           name="date"
-          render={({ field }) => (
-            <input
-              type="datetime-local"
-              value={formatLocalDateTime(
-                field.value ? new Date(field.value) : undefined
-              )}
-              onChange={(e) => field.onChange(new Date(e.target.value))}
-              className="w-full rounded-md  p-2 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 my-2"
-            />
-          )}
+          render={({ field }) => {
+            const now = new Date();
+            const pad = (n: number) => String(n).padStart(2, "0");
+            const minDate = `${now.getFullYear()}-${pad(
+              now.getMonth() + 1
+            )}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(
+              now.getMinutes()
+            )}`;
+
+            return (
+              <input
+                type="datetime-local"
+                min={minDate} // <- prevent past dates
+                value={formatLocalDateTime(
+                  field.value ? new Date(field.value) : undefined
+                )}
+                onChange={(e) => field.onChange(new Date(e.target.value))}
+                className="w-full rounded-md p-2 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 my-2"
+              />
+            );
+          }}
         />
 
         <div className="flex flex-col gap-2">
