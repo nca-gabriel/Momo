@@ -230,7 +230,7 @@ export default function TodoForm({
             type="submit"
             className="bg-blue-500 text-white p-1 flex-1 rounded-md"
           >
-            {initialValues ? "Update" : "Add"}
+            {initialValues && !("isNew" in initialValues) ? "Update" : "Add"}
           </button>
           {initialValues && (
             <button

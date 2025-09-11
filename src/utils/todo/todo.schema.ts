@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { nullable, z } from "zod";
 
 export const subTodoSchema = z.object({
   id: z.uuid().default(() => crypto.randomUUID()),
