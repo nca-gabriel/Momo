@@ -57,7 +57,7 @@ export default function TagPage() {
             tagTodos.map((todo) => (
               <li
                 key={todo.id}
-                className={`border-b border-gray-200 p-1.5 ${
+                className={`border-b border-gray-200 p-1.5  cursor-pointer ${
                   todo.status ? "opacity-50" : ""
                 }`}
                 onClick={() => {
@@ -65,7 +65,7 @@ export default function TagPage() {
                   setDrawer(true);
                 }}
               >
-                <section className="flex justify-between mb-2 cursor-pointer">
+                <section className="flex justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
