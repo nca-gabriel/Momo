@@ -96,7 +96,7 @@ export default function TodoForm({
 
   return (
     <div
-      className={`z-10  ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200   max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto transition-all duration-300 ${
+      className={`z-10 flex flex-col  ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200   max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto transition-all duration-300 ${
         open ? "w-70" : ""
       }`}
     >
@@ -105,21 +105,21 @@ export default function TodoForm({
         <button
           type="button"
           onClick={onClose}
-          className=" text-gray-500 hover:text-black"
+          className=" text-gray-500 hover:text-violet-600 hover:font-semibold cursor-pointer"
         >
           ✕
         </button>
       </header>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
-        className="flex flex-col flex-auto"
+        className="flex flex-col flex-auto "
       >
         <div className="flex flex-col gap-3 min-h-50">
           <input
             {...register("title")}
             type="text"
             placeholder="Task Name"
-            className="shadow-md p-2 rounded-md"
+            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
           />
 
           {errors.title && (
@@ -128,7 +128,7 @@ export default function TodoForm({
           <textarea
             {...register("details")}
             placeholder="details"
-            className="flex flex-1 shadow-md rounded-md p-2"
+            className="flex flex-1 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
           />
         </div>
         <Controller
@@ -151,18 +151,30 @@ export default function TodoForm({
                   field.value ? new Date(field.value) : undefined
                 )}
                 onChange={(e) => field.onChange(new Date(e.target.value))}
-                className="w-full rounded-md p-2 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 my-2"
+                className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
               />
             );
           }}
         />
 
         <div className="flex flex-col gap-2">
-          <label className="font-semibold">tag:</label>
-          <select {...register("tagId")} className="shadow-md p-2 rounded-md">
-            <option value="00000000-0000-0000-0000-000000000000">No tag</option>
+          <label className="font-semibold">Tag:</label>
+          <select
+            {...register("tagId")}
+            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+          >
+            <option
+              value="00000000-0000-0000-0000-000000000000"
+              className="bg-blue-200"
+            >
+              No tag
+            </option>
             {tags.map((tag) => (
               <option key={tag.id} value={tag.id}>
+                <span
+                  className="w-5 h-5 rounded-sm"
+                  style={{ backgroundColor: tag.color }}
+                />
                 {tag.name}
               </option>
             ))}
@@ -172,74 +184,78 @@ export default function TodoForm({
           )}
         </div>
 
-        <h1 className="font-bold text-lg">Subtasks:</h1>
-        {subTodos.map((subTodo, index) => {
-          const isEmpty = !subTodo.title.trim() && !subTodo.details.trim();
+        <h1 className="font-bold text-lg mt-2">Subtasks:</h1>
+        <div className="flex justify-start border-gray-200 text-gray-500 rounded-md focus-within:text-black ">
+          <button
+            type="button"
+            onClick={() =>
+              append({
+                id: crypto.randomUUID(),
+                title: "",
+                details: "",
+                status: false,
+              })
+            }
+            className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer p-1"
+          >
+            <span className="text-2xl font-bold">+</span>
+            <span>Add New Subtask</span>
+          </button>
+        </div>
+        <section className="max-h-52 overflow-y-auto overflow-x-hidden">
+          {subTodos.map((subTodo, index) => {
+            const isEmpty = !subTodo.title.trim() && !subTodo.details.trim();
 
-          return (
-            <div
-              key={subTodo.id}
-              className=" flex flex-col sm:flex-row gap-2 mb-2 p-1 rounded shadow-sm"
-            >
-              {isEmpty ? (
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  className="text-red-500 font-bold w-5 h-5"
-                >
-                  ✕
-                </button>
-              ) : (
-                <input
-                  type="checkbox"
-                  checked={subTodo.status}
-                  onChange={() => {
-                    if (
-                      confirm(
-                        `Are you sure you want to mark "${subTodo.title}" as done? This will remove it.`
-                      )
-                    ) {
-                      remove(index);
-                    }
-                  }}
-                  className="w-5 h-5 mt-1"
-                />
-              )}
+            return (
+              <div
+                key={subTodo.id}
+                className="flex sm:flex-row gap-2 mb-2 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+              >
+                {isEmpty ? (
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="text-red-500 font-bold w-5 h-5"
+                  >
+                    ✕
+                  </button>
+                ) : (
+                  <input
+                    type="checkbox"
+                    checked={subTodo.status}
+                    onChange={() => {
+                      if (
+                        confirm(
+                          `Are you sure you want to mark "${subTodo.title}" as done? This will remove it.`
+                        )
+                      ) {
+                        remove(index);
+                      }
+                    }}
+                    className="w-5 h-5 mt-1 "
+                  />
+                )}
 
-              <div className="flex-1 flex flex-col">
-                <input
-                  {...register(`subTodos.${index}.title` as const)}
-                  placeholder="Subtask title"
-                  className="shadow-md p-1 rounded"
-                />
-                <input
-                  {...register(`subTodos.${index}.details` as const)}
-                  placeholder="Subtask details"
-                  className="shadow-md p-1 rounded mt-1"
-                />
+                <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+                  <input
+                    {...register(`subTodos.${index}.title` as const)}
+                    placeholder="Subtask title"
+                    className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black"
+                  />
+                  <input
+                    {...register(`subTodos.${index}.details` as const)}
+                    placeholder="Subtask details"
+                    className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black"
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() =>
-            append({
-              id: crypto.randomUUID(),
-              title: "",
-              details: "",
-              status: false,
-            })
-          }
-          className="mb-2 bg-green-500 text-white p-1 rounded"
-        >
-          Add Subtask +
-        </button>
-
-        <div className="flex  gap-2">
+            );
+          })}
+        </section>
+        <div className="flex gap-2 mt-5">
           <button
             type="submit"
-            className="bg-blue-500 text-white p-1 flex-1 rounded-md"
+            className="bg-violet-600 text-white px-4 py-1 flex-1 rounded-md cursor-pointer hover:bg-violet-800 transition-colors duration-200 delay-100"
           >
             {initialValues && !("isNew" in initialValues) ? "Update" : "Add"}
           </button>
@@ -250,7 +266,7 @@ export default function TodoForm({
                 onDelete(initialValues.id);
                 onClose();
               }}
-              className="bg-red-500 text-white px-4 py-1 rounded flex-1"
+              className="bg-gray-300 text-gray-500 px-4 py-1 flex-1 rounded hover:bg-gray-600 hover:text-white transition-colors duration-200 cursor-pointer"
             >
               Delete
             </button>

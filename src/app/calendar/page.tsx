@@ -37,7 +37,7 @@ export default function Upcoming() {
                   title: t.title,
                   start: t.date,
                   backgroundColor: tag?.color || "#3b82f6",
-                  borderColor: tag?.color || "#3b82f6",
+                  borderColor: tag?.color || "#7c3aed",
                 };
               }) as EventSourceInput
             }
@@ -86,11 +86,15 @@ export default function Upcoming() {
             setDrawer(false);
           }}
           onSubmit={(data) => {
-            if (editingTodo) {
+            // check if this todo is already in the state
+            const exists = todos.some((t) => t.id === editingTodo?.id);
+
+            if (exists && editingTodo) {
               updateTodo(editingTodo.id, data);
             } else {
-              addTodo({ ...data, id: crypto.randomUUID() });
+              addTodo({ ...data, id: editingTodo?.id || crypto.randomUUID() });
             }
+
             setDrawer(false);
           }}
           onDelete={(id) => {

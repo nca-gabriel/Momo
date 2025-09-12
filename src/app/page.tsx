@@ -43,7 +43,7 @@ export default function Home() {
                 setDrawer(true);
                 setEditingTodo(null);
               }}
-              className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-violet-600 transition-colors cursor-pointer"
             >
               <span className="text-lg">+</span>
               <span>Add</span>
@@ -67,13 +67,19 @@ export default function Home() {
                     className={`border-b border-gray-200 p-2 cursor-pointer  ${
                       todo.status ? "opacity-50" : ""
                     }`}
+                    onClick={() => {
+                      setEditingTodo(todo);
+                      setDrawer(true);
+                    }}
                   >
                     {/* rows */}
                     <section className="flex justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
+                          className="accent-violet-600"
                           checked={todo.status || false}
+                          onClick={(e) => e.stopPropagation()}
                           onChange={(e) =>
                             updateTodo(todo.id, {
                               ...todo,

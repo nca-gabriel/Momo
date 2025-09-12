@@ -60,12 +60,18 @@ export default function TagPage() {
                 className={`border-b border-gray-200 p-1.5 ${
                   todo.status ? "opacity-50" : ""
                 }`}
+                onClick={() => {
+                  setEditingTodo(todo);
+                  setDrawer(true);
+                }}
               >
-                <section className="flex justify-between mb-2">
+                <section className="flex justify-between mb-2 cursor-pointer">
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
+                      className="accent-violet-600"
                       checked={todo.status || false}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) =>
                         updateTodo(todo.id, {
                           ...todo,
@@ -86,6 +92,7 @@ export default function TagPage() {
                       setEditingTodo(todo);
                       setDrawer(true);
                     }}
+                    className="cursor-pointer"
                   >
                     <Image
                       src="/arrow.png"

@@ -69,6 +69,7 @@ export default function Upcoming() {
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
+                      className="accent-violet-600"
                       checked={todo.status || false}
                       onChange={(e) =>
                         updateTodo(todo.id, {
