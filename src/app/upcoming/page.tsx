@@ -45,9 +45,30 @@ export default function Upcoming() {
   }, []);
 
   if (!ready) return null;
-  const rendertag = (title: string, tag: typeof todos) => (
+  const rendertag = (title: string, tag: typeof todos, sectionDate: Date) => (
     <div className="flex flex-col flex-1 min-h-full w-full">
-      <h2 className="text-2xl font-semibold mb-2">{title}</h2>
+      <h2 className="text-2xl font-semibold mb-1">{title}</h2>
+      <div className="flex justify-end px-1 ">
+        <button
+          onClick={() => {
+            setEditingTodo({
+              id: crypto.randomUUID(),
+              title: "",
+              details: "",
+              date: sectionDate, // for Today section
+              status: false,
+              subTodos: [],
+              tagId: "00000000-0000-0000-0000-000000000000",
+            });
+            setDrawer(true);
+          }}
+          className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-violet-600 transition-colors cursor-pointer"
+        >
+          <span className="text-lg">+</span>
+          <span>Add</span>
+        </button>
+      </div>
+
       <ul className="gap-2">
         {tag.length === 0 ? (
           <li className="p-2 text-gray-500">No tasks</li>
@@ -144,15 +165,15 @@ export default function Upcoming() {
         </header>
 
         <div className="mb-6 border border-gray-200 p-2 rounded">
-          {rendertag("Today", todayTodos)}
+          {rendertag("Today", todayTodos, today)}
         </div>
 
         <div className="flex flex-wrap gap-6">
           <div className="flex-1 border border-gray-200 p-2 rounded">
-            {rendertag("Tomorrow", tomorrowTodos)}
+            {rendertag("Tomorrow", tomorrowTodos, tomorrow)}
           </div>
           <div className="flex-1 border border-gray-200 p-2 rounded">
-            {rendertag("This Week", thisWeekTodos)}
+            {rendertag("This Week", thisWeekTodos, endOfWeek)}
           </div>
         </div>
       </div>
@@ -166,11 +187,13 @@ export default function Upcoming() {
             setDrawer(false);
           }}
           onSubmit={(data) => {
-            if (editingTodo) {
+            if (editingTodo && todos.some((t) => t.id === editingTodo.id)) {
               updateTodo(editingTodo.id, data);
             } else {
-              addTodo(data);
+              addTodo({ ...data, id: editingTodo?.id || crypto.randomUUID() });
             }
+            setDrawer(false);
+            setEditingTodo(null);
           }}
           onDelete={(id) => {
             deleteTodo(id);

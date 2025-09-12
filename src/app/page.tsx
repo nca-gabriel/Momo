@@ -37,21 +37,21 @@ export default function Home() {
       <div className="flex flex-col flex-1 min-h-full">
         <header className="">
           <h1 className="text-4xl font-semibold">Today!</h1>
-          <div className="flex justify-end">
-            <button
-              onClick={() => {
-                setDrawer(true);
-                setEditingTodo(null);
-              }}
-              className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-violet-600 transition-colors cursor-pointer"
-            >
-              <span className="text-lg">+</span>
-              <span>Add</span>
-            </button>
-          </div>
         </header>
 
         {/* Todos */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => {
+              setDrawer(true);
+              setEditingTodo(null);
+            }}
+            className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-violet-600 transition-colors cursor-pointer"
+          >
+            <span className="text-lg">+</span>
+            <span>Add</span>
+          </button>
+        </div>
         <ul className=" gap-2">
           {todos.filter((todo) => todo.date && isToday(todo.date)).length ===
           0 ? (
