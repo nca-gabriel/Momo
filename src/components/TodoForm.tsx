@@ -171,10 +171,6 @@ export default function TodoForm({
             </option>
             {tags.map((tag) => (
               <option key={tag.id} value={tag.id}>
-                <span
-                  className="w-5 h-5 rounded-sm"
-                  style={{ backgroundColor: tag.color }}
-                />
                 {tag.name}
               </option>
             ))}
