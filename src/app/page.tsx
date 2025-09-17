@@ -1,6 +1,6 @@
 "use client";
 
-import TodoForm from "../components/TodoForm";
+// import TodoForm from "../components/TodoForm";
 import { useTagContext, useTodoContext } from "@/context/AppProvider";
 import { useState, useEffect } from "react";
 import { todoInput } from "@/utils/todo/todo.schema";
@@ -149,7 +149,7 @@ export default function Home() {
       </div>
 
       {/* drawer */}
-      {drawer && (
+      {/* {drawer && (
         <TodoForm
           open={drawer}
           initialValues={editingTodo}
@@ -168,7 +168,7 @@ export default function Home() {
             deleteTodo(id);
           }}
         />
-      )}
+      )} */}
     </main>
   );
 }

@@ -1,22 +1,17 @@
-import { nullable, z } from "zod";
+import { z } from "zod";
 
 export const subTodoSchema = z.object({
-  id: z.uuid().default(() => crypto.randomUUID()),
   title: z.string().min(1, "title is required"),
-  details: z.string().default(""),
-  status: z.boolean().default(false),
+  done: z.boolean().default(false),
 });
 export type subTodoInput = z.infer<typeof subTodoSchema>;
 
 export const todoSchema = z.object({
-  id: z.uuid().default(() => crypto.randomUUID()),
   title: z.string().min(1, "title is required"),
-  details: z.string().default(""),
-  date: z.coerce.date(),
-  status: z.boolean().default(false),
-  tagId: z.uuid().default("00000000-0000-0000-0000-000000000000"),
-  subTodos: z.array(subTodoSchema).default([]),
+  description: z.string().optional().nullable(),
+  completed: z.boolean().default(false),
+  todoDate: z.coerce.date(),
 });
-export type todoInput = z.infer<typeof todoSchema>; // single object
-
-export type TodoState = todoInput[]; // array of  todos
+// runtime validation schema
+export type todoInput = z.infer<typeof todoSchema>; // type for TS only
+export const todoArrSchema = z.array<typeof todoSchema>;
