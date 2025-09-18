@@ -1,274 +1,168 @@
-// import { useForm, useFieldArray } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { todoSchema, type todoInput } from "../utils/todo/todo.schema";
-// import { useEffect } from "react";
-// import type { Resolver } from "react-hook-form";
-// import { Controller } from "react-hook-form";
-// import { useTagContext } from "@/context/AppProvider";
+"use client";
 
-// type Props = {
-//   open: boolean;
-//   initialValues: todoInput | null;
-//   onClose: () => void;
-//   onSubmit: (data: todoInput) => void;
-//   onDelete: (id: string) => void;
-// };
+import { useState } from "react";
+import { Todo, TodoArr } from "@/utils/todo.schema";
+import { TagArr } from "@/utils/tag.schema";
+import { useTodos } from "@/hooks/useTodos";
 
-// // TodoForm.tsx
-// export default function TodoForm({
-//   open,
-//   initialValues,
-//   onClose,
-//   onSubmit,
-//   onDelete,
-// }: Props) {
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     reset,
-//     control,
-//   } = useForm<todoInput>({
-//     resolver: zodResolver(todoSchema) as Resolver<todoInput>,
-//     defaultValues: initialValues ?? {
-//       title: "",
-//       details: "",
-//       date: new Date(),
-//       subTodos: [],
-//       tagId: undefined,
-//     },
-//   });
+type Props = {
+  open: boolean;
+  initialValues: Todo | null;
+  tags: TagArr;
+  onClose: () => void;
+  onSubmit: (data: Partial<Todo>) => void;
+  onDelete?: (id: string) => void;
+};
 
-//   // Field array for subtodos
-//   const {
-//     fields: subTodos,
-//     append,
-//     remove,
-//   } = useFieldArray({
-//     control,
-//     name: "subTodos",
-//   });
+export default function TodoForm({
+  open,
+  initialValues,
+  tags,
+  onClose,
+  onSubmit,
+  onDelete,
+}: Props) {
+  const [title, setTitle] = useState(initialValues?.title || "");
+  const [description, setDescription] = useState(
+    initialValues?.description || ""
+  );
+  const [completed, setCompleted] = useState(initialValues?.completed || false);
+  const [todoDate, setTodoDate] = useState(
+    initialValues?.todoDate
+      ? new Date(initialValues.todoDate).toISOString().slice(0, 16)
+      : new Date().toISOString().slice(0, 16)
+  );
+  const [tagId, setTagId] = useState(initialValues?.tag?.[0]?.id || "");
+  const [subTodos, setSubTodos] = useState(initialValues?.subTodos || []);
 
-//   const { tags } = useTagContext();
+  const handleAddSubTodo = () =>
+    setSubTodos([...subTodos, { title: "", done: false }]);
+  const handleSubTodoChange = (index: number, value: string) => {
+    const newSubs = [...subTodos];
+    newSubs[index].title = value;
+    setSubTodos(newSubs);
+  };
+  const handleRemoveSubTodo = (index: number) => {
+    const newSubs = [...subTodos];
+    newSubs.splice(index, 1);
+    setSubTodos(newSubs);
+  };
 
-//   // update form when initialValues changes
-//   useEffect(() => {
-//     reset(
-//       initialValues ?? {
-//         title: "",
-//         details: "",
-//         date: new Date(),
-//         status: false,
-//         tagId: undefined,
-//         subTodos: [],
-//       }
-//     );
-//   }, [initialValues, reset]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      title,
+      description,
+      completed,
+      todoDate: new Date(todoDate),
+      subTodos,
+      tag: tagId ? tags.filter((t) => t.id === tagId) : [],
+    });
+    if (!initialValues) {
+      // reset form after new todo
+      setTitle("");
+      setDescription("");
+      setCompleted(false);
+      setTodoDate(new Date().toISOString().slice(0, 16));
+      setTagId("");
+      setSubTodos([]);
+    }
+  };
 
-//   const handleFormSubmit = (data: todoInput) => {
-//     onSubmit(data);
+  if (!open) return null;
 
-//     if (initialValues) {
-//       // update: keep form synced with updated todo
-//       reset(data);
-//       alert("updated");
-//     } else {
-//       // new todo: clear the form for next entry
-//       reset({
-//         id: crypto.randomUUID(),
-//         title: "",
-//         details: "",
-//         date: new Date(),
-//         status: false,
-//         subTodos: [],
-//         tagId: undefined,
-//       });
-//     }
-//   };
+  return (
+    <div className="fixed top-0 right-0 bottom-0 w-72 p-4 bg-gray-50 shadow-lg border z-10 overflow-y-auto">
+      <header className="flex justify-between mb-4">
+        <h2 className="font-bold">Task</h2>
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-violet-600"
+        >
+          ✕
+        </button>
+      </header>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Task Name"
+          className="border p-2 rounded"
+          required
+        />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Details"
+          className="border p-2 rounded"
+        />
+        <input
+          type="datetime-local"
+          value={todoDate}
+          onChange={(e) => setTodoDate(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <select
+          value={tagId}
+          onChange={(e) => setTagId(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="Notag">No tag</option>
+          {tags.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
 
-//   const formatLocalDateTime = (date?: Date) => {
-//     if (!date) return "";
-//     const pad = (n: number) => String(n).padStart(2, "0");
-//     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-//       date.getDate()
-//     )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-//   };
+        <h3 className="font-semibold">Subtasks:</h3>
+        {subTodos.map((sub, index) => (
+          <div key={index} className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={sub.title}
+              onChange={(e) => handleSubTodoChange(index, e.target.value)}
+              className="border p-1 rounded flex-1"
+              placeholder="Subtask title"
+            />
+            <button
+              type="button"
+              onClick={() => handleRemoveSubTodo(index)}
+              className="text-red-500 font-bold"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={handleAddSubTodo}
+          className="text-gray-700 hover:text-gray-900"
+        >
+          + Add Subtask
+        </button>
 
-//   return (
-//     <div
-//       className={`z-10 flex flex-col  ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200   max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto transition-all duration-300 ${
-//         open ? "w-70" : ""
-//       }`}
-//     >
-//       <header className="flex justify-between mb-4">
-//         <h1 className="font-bold text-lg">Task:</h1>
-//         <button
-//           type="button"
-//           onClick={onClose}
-//           className=" text-gray-500 hover:text-violet-600 hover:font-semibold cursor-pointer"
-//         >
-//           ✕
-//         </button>
-//       </header>
-//       <form
-//         onSubmit={handleSubmit(handleFormSubmit)}
-//         className="flex flex-col flex-auto "
-//       >
-//         <div className="flex flex-col gap-3 min-h-50">
-//           <input
-//             {...register("title")}
-//             type="text"
-//             placeholder="Task Name"
-//             className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-//           />
-
-//           {errors.title && (
-//             <span className="text-red-500">{errors.title.message}</span>
-//           )}
-//           <textarea
-//             {...register("details")}
-//             placeholder="details"
-//             className="flex flex-1 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-//           />
-//         </div>
-//         <Controller
-//           control={control}
-//           name="date"
-//           render={({ field }) => {
-//             const now = new Date();
-//             const pad = (n: number) => String(n).padStart(2, "0");
-//             const minDate = `${now.getFullYear()}-${pad(
-//               now.getMonth() + 1
-//             )}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(
-//               now.getMinutes()
-//             )}`;
-
-//             return (
-//               <input
-//                 type="datetime-local"
-//                 min={minDate} // <- prevent past dates
-//                 value={formatLocalDateTime(
-//                   field.value ? new Date(field.value) : undefined
-//                 )}
-//                 onChange={(e) => field.onChange(new Date(e.target.value))}
-//                 className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
-//               />
-//             );
-//           }}
-//         />
-
-//         <div className="flex flex-col gap-2">
-//           <label className="font-semibold">Tag:</label>
-//           <select
-//             {...register("tagId")}
-//             className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-//           >
-//             <option
-//               value="00000000-0000-0000-0000-000000000000"
-//               className="bg-blue-200"
-//             >
-//               No tag
-//             </option>
-//             {tags.map((tag) => (
-//               <option key={tag.id} value={tag.id}>
-//                 {tag.name}
-//               </option>
-//             ))}
-//           </select>
-//           {errors.tagId && (
-//             <span className="text-red-500">{errors.tagId.message}</span>
-//           )}
-//         </div>
-
-//         <h1 className="font-bold text-lg mt-2">Subtasks:</h1>
-//         <div className="flex justify-start border-gray-200 text-gray-500 rounded-md focus-within:text-black ">
-//           <button
-//             type="button"
-//             onClick={() =>
-//               append({
-//                 id: crypto.randomUUID(),
-//                 title: "",
-//                 details: "",
-//                 status: false,
-//               })
-//             }
-//             className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer p-1"
-//           >
-//             <span className="text-2xl font-bold">+</span>
-//             <span>Add New Subtask</span>
-//           </button>
-//         </div>
-//         <section className="max-h-52 overflow-y-auto overflow-x-hidden">
-//           {subTodos.map((subTodo, index) => {
-//             const isEmpty = !subTodo.title.trim() && !subTodo.details.trim();
-
-//             return (
-//               <div
-//                 key={subTodo.id}
-//                 className="flex sm:flex-row gap-2 mb-2 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-//               >
-//                 {isEmpty ? (
-//                   <button
-//                     type="button"
-//                     onClick={() => remove(index)}
-//                     className="text-red-500 font-bold w-5 h-5"
-//                   >
-//                     ✕
-//                   </button>
-//                 ) : (
-//                   <input
-//                     type="checkbox"
-//                     checked={subTodo.status}
-//                     onChange={() => {
-//                       if (
-//                         confirm(
-//                           `Are you sure you want to mark "${subTodo.title}" as done? This will remove it.`
-//                         )
-//                       ) {
-//                         remove(index);
-//                       }
-//                     }}
-//                     className="w-5 h-5 mt-1 "
-//                   />
-//                 )}
-
-//                 <div className="flex-1 flex flex-col gap-1.5 min-w-0">
-//                   <input
-//                     {...register(`subTodos.${index}.title` as const)}
-//                     placeholder="Subtask title"
-//                     className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black"
-//                   />
-//                   <input
-//                     {...register(`subTodos.${index}.details` as const)}
-//                     placeholder="Subtask details"
-//                     className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black"
-//                   />
-//                 </div>
-//               </div>
-//             );
-//           })}
-//         </section>
-//         <div className="flex gap-2 mt-5">
-//           <button
-//             type="submit"
-//             className="bg-violet-600 text-white px-4 py-1 flex-1 rounded-md cursor-pointer hover:bg-violet-800 transition-colors duration-200 delay-100"
-//           >
-//             {initialValues && !("isNew" in initialValues) ? "Update" : "Add"}
-//           </button>
-//           {initialValues && (
-//             <button
-//               type="button"
-//               onClick={() => {
-//                 onDelete(initialValues.id);
-//                 onClose();
-//               }}
-//               className="bg-gray-300 text-gray-500 px-4 py-1 flex-1 rounded hover:bg-gray-600 hover:text-white transition-colors duration-200 cursor-pointer"
-//             >
-//               Delete
-//             </button>
-//           )}
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }
+        <div className="flex gap-2 mt-4">
+          <button
+            type="submit"
+            className="bg-violet-600 text-white px-4 py-1 rounded flex-1 hover:bg-violet-800"
+          >
+            {initialValues ? "Update" : "Add"}
+          </button>
+          {initialValues && onDelete && (
+            <button
+              type="button"
+              onClick={() => {
+                onDelete(initialValues.id);
+                onClose();
+              }}
+              className="bg-gray-300 text-gray-500 px-4 py-1 rounded flex-1 hover:bg-gray-600 hover:text-white"
+            >
+              Delete
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}

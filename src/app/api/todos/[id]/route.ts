@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/utils/prisma";
-import { todoSchema } from "@/utils/todo/todo.schema";
+import { todoPatch } from "@/utils/todo.schema";
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const todo = await prisma.todo.findUnique({
@@ -16,7 +16,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const body = await req.json();
-  const result = todoSchema.partial().safeParse(body);
+  const result = todoPatch.partial().safeParse(body);
 
   if (!result.success) {
     return NextResponse.json(
@@ -25,9 +25,29 @@ export async function PATCH(
     );
   }
 
+  const { subTodos, tag, ...todoFields } = result.data;
+
   const todo = await prisma.todo.update({
     where: { id: params.id },
-    data: result.data,
+    data: {
+      ...todoFields,
+      subTodos: subTodos
+        ? {
+            updateMany: subTodos.map((st) => ({
+              where: { id: st.id },
+              data: st,
+            })),
+          }
+        : undefined,
+      tag: tag
+        ? {
+            updateMany: tag.map((t) => ({
+              where: { id: t.id },
+              data: t,
+            })),
+          }
+        : undefined,
+    },
   });
 
   return NextResponse.json(todo, { status: 202 });

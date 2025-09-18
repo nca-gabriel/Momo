@@ -3,7 +3,7 @@
 import TodoForm from "@/components/TodoForm";
 import { useTagContext, useTodoContext } from "@/context/AppProvider";
 import { useState, useEffect } from "react";
-import { todoInput } from "@/utils/todo/todo.schema";
+import { todoInput } from "@/utils/todo.schema";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 

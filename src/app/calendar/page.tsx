@@ -8,7 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { EventSourceInput } from "@fullcalendar/core";
 import TodoForm from "@/components/TodoForm";
 import { useTodoContext, useTagContext } from "@/context/AppProvider";
-import { todoInput } from "@/utils/todo/todo.schema";
+import { todoInput } from "@/utils/todo.schema";
 
 export default function Upcoming() {
   const { todos, addTodo, updateTodo, deleteTodo } = useTodoContext();
