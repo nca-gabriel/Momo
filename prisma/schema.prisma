@@ -29,7 +29,7 @@ model SubTodo {
   title     String
   done      Boolean  @default(false)
   todoId    String   @db.ObjectId
-  todo      Todo     @relation(fields: [todoId], references: [id])
+  todo      Todo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
@@ -37,7 +37,7 @@ model Tag {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   color     String
-  Todo      Todo?    @relation(fields: [todoId], references: [id])
+  Todo      Todo?    @relation(fields: [todoId], references: [id], onDelete: Cascade)
   todoId    String?  @db.ObjectId
   createdAt DateTime @default(now())
 }

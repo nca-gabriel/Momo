@@ -27,36 +27,50 @@ export async function PATCH(
 
   const { subTodos, tag, ...todoFields } = result.data;
 
-  const todo = await prisma.todo.update({
-    where: { id: params.id },
-    data: {
-      ...todoFields,
-      subTodos: subTodos
-        ? {
-            updateMany: subTodos.map((st) => ({
-              where: { id: st.id },
-              data: st,
-            })),
-          }
-        : undefined,
-      tag: tag
-        ? {
-            updateMany: tag.map((t) => ({
-              where: { id: t.id },
-              data: t,
-            })),
-          }
-        : undefined,
-    },
-  });
+  try {
+    const todo = await prisma.todo.update({
+      where: { id: params.id },
+      data: {
+        ...todoFields,
+        subTodos: subTodos
+          ? {
+              create: subTodos.map((st) => ({
+                title: st.title,
+                done: st.done ?? false,
+              })),
+            }
+          : undefined,
+        tag: tag
+          ? {
+              create: tag.map((t) => ({
+                name: t.name,
+                color: t.color,
+              })),
+            }
+          : undefined,
+      },
+      include: { subTodos: true, tag: true },
+    });
 
-  return NextResponse.json(todo, { status: 202 });
+    return NextResponse.json(todo, { status: 200 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Failed to update todo" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(
   _: Request,
   { params }: { params: { id: string } }
 ) {
-  await prisma.todo.delete({ where: { id: params.id } });
-  return NextResponse.json({ message: "deleted", status: 202 });
+  try {
+    await prisma.todo.delete({ where: { id: params.id } });
+    return NextResponse.json({ message: "deleted" }, { status: 200 });
+  } catch (err) {
+    console.error("DELETE error:", err);
+    return NextResponse.json({ err: "Failed to delete todo" }, { status: 500 });
+  }
 }

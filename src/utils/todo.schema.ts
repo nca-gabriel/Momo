@@ -41,5 +41,7 @@ export type SubTodoData = z.infer<typeof subTodoData>;
 export type TodoForm = z.infer<typeof todoForm>; // for forms / RHF
 export type TodoData = z.infer<typeof todoData>; // for API / Prisma
 
-export const todoPatch = todoData.partial();
+export const todoPatch = todoForm.partial().extend({
+  id: z.string().optional(),
+});
 export type TodoPatch = z.infer<typeof todoPatch>; // for partial updates

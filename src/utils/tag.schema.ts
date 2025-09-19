@@ -14,5 +14,8 @@ export const tagData = tagForm.extend({
 // Array for validation
 export const TagArr = z.array(tagData);
 
+export const tagPatch = tagForm.partial();
+export type TagPatch = z.infer<typeof tagPatch>;
+
 export type TagForm = z.infer<typeof tagForm>; // for forms / RHF
 export type TagData = z.infer<typeof tagData>; // for API / Prisma responses

@@ -20,7 +20,7 @@ export default function Todos({ todos, tags, filterBy }: Props) {
   const [drawer, setDrawer] = useState(false);
   const [editingTodo, setEditingTodo] = useState<TodoData | null>(null);
 
-  const { addTodo, updateTodo, deleteTodo } = useTodos();
+  const { addMutation, updateMutation, deleteMutation } = useTodos();
 
   const filterTodos = () => {
     switch (filterBy) {
@@ -80,8 +80,9 @@ export default function Todos({ todos, tags, filterBy }: Props) {
                       checked={todo.completed || false}
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) =>
-                        updateTodo(todo.id, {
-                          completed: e.target.checked,
+                        updateMutation.mutate({
+                          id: todo.id,
+                          todo: { completed: e.target.checked },
                         })
                       }
                     />
@@ -149,26 +150,27 @@ export default function Todos({ todos, tags, filterBy }: Props) {
       </ul>
 
       {/* drawer */}
-      {/* {drawer && (
+      {drawer && (
         <TodoForm
           open={drawer}
-          initialValues={editingTodo}
+          initValues={editingTodo}
+          tags={tags}
           onClose={() => {
             setEditingTodo(null);
             setDrawer(false);
           }}
           onSubmit={(data) => {
             if (editingTodo) {
-              updateTodo(editingTodo.id, data);
+              updateMutation.mutate({ id: editingTodo.id, todo: data });
             } else {
-              addTodo(data);
+              addMutation.mutate(data);
             }
           }}
           onDelete={(id) => {
-            deleteTodo(id);
+            deleteMutation.mutate(id);
           }}
         />
-      )} */}
+      )}
     </main>
   );
 }
