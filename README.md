@@ -1,6 +1,6 @@
 ## ABOUT
 
-Momo is a task management app that helps you organize tasks with dates, notes, and todos. It categorizes tasks into daily, upcoming, and weekly views for easy tracking.
+Momo is a task management app that helps you organize tasks with dates, notes, and todos. It categorizes tasks into daily, upcoming, and weekly views for easy tracking...
 
 ## BRANCHES
 
