@@ -19,26 +19,25 @@ model Todo {
   description String?
   completed   Boolean   @default(false)
   subTodos    SubTodo[]
-  tag         Tag[]
+  tagIds      String[]  @db.ObjectId //ref
   todoDate    DateTime
   createdAt   DateTime  @default(now())
 }
 
 model SubTodo {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  done      Boolean  @default(false)
-  todoId    String   @db.ObjectId
-  todo      Todo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  done        Boolean  @default(false)
+  todoId      String   @db.ObjectId
+  todo        Todo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 }
 
 model Tag {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   color     String
-  Todo      Todo?    @relation(fields: [todoId], references: [id], onDelete: Cascade)
-  todoId    String?  @db.ObjectId
   createdAt DateTime @default(now())
 }
 

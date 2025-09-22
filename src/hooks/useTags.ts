@@ -9,7 +9,7 @@ export function useTags() {
     queryKey: ["tags"],
     queryFn: async () => {
       try {
-        const res = await axios.get("/api/todos");
+        const res = await axios.get("/api/tags");
         return TagArr.parse(res.data);
       } catch (error) {
         console.error(error);
@@ -17,5 +17,35 @@ export function useTags() {
       }
     },
   });
-  return {};
+
+  const addMutation = useMutation({
+    mutationFn: async (tag: TagForm) => {
+      const res = await axios.post("/api/tags", tag);
+      return res.data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, tag }: { id: string; tag: TagPatch }) => {
+      const res = await axios.patch(`/api/tags/${id}`, tag);
+      return res.data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await axios.delete(`/api/tags/${id}`);
+      return id;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
+  });
+
+  return {
+    tagsQuery,
+    addMutation,
+    updateMutation,
+    deleteMutation,
+  };
 }

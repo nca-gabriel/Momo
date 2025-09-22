@@ -32,7 +32,7 @@ export default function RootLayout({
         <QueryProvider>
           <div className="flex min-h-screen w-full">
             <div className="flex w-full max-w-screen-2xl mx-auto gap-2">
-              {/* <Sidebar /> */}
+              <Sidebar />
               <main className="flex-1 ">{children}</main>
             </div>
           </div>

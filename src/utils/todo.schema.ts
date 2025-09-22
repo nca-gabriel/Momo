@@ -7,6 +7,7 @@ import { tagData, tagForm } from "./tag.schema";
 
 export const subTodoForm = z.object({
   title: z.string().min(1),
+  description: z.string().nullish(),
   done: z.boolean().optional(),
 });
 
@@ -16,12 +17,16 @@ export const subTodoData = subTodoForm.extend({
   createdAt: z.coerce.date(),
 });
 
+export const subTodoPatch = subTodoForm.extend({
+  id: z.string().min(1).optional(),
+});
+
 export const todoForm = z.object({
   title: z.string().min(1),
   description: z.string().nullish(),
   completed: z.boolean().optional(),
   todoDate: z.coerce.date(),
-  subTodos: z.array(subTodoForm).optional(), // for creating nested subtodos
+  subTodos: z.array(subTodoPatch).optional(), // for creating nested subtodos
   tag: z.array(tagForm).optional(), // for creating nested tags
 });
 
@@ -43,5 +48,7 @@ export type TodoData = z.infer<typeof todoData>; // for API / Prisma
 
 export const todoPatch = todoForm.partial().extend({
   id: z.string().optional(),
+  subTodos: z.array(subTodoPatch).optional(),
 });
 export type TodoPatch = z.infer<typeof todoPatch>; // for partial updates
+export type SubTodoPatch = z.infer<typeof subTodoPatch>;

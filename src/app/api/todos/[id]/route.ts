@@ -13,10 +13,11 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   const body = await req.json();
-  const result = todoPatch.partial().safeParse(body);
+  const result = todoPatch.safeParse(body);
 
   if (!result.success) {
     return NextResponse.json(
@@ -28,31 +29,86 @@ export async function PATCH(
   const { subTodos, tag, ...todoFields } = result.data;
 
   try {
-    const todo = await prisma.todo.update({
-      where: { id: params.id },
-      data: {
-        ...todoFields,
-        subTodos: subTodos
-          ? {
-              create: subTodos.map((st) => ({
+    const updated = await prisma.$transaction(async (tx) => {
+      if (subTodos) {
+        // get existing subtodos
+        const existing = await tx.subTodo.findMany({
+          where: { todoId: id },
+          select: { id: true },
+        });
+        const existingIds = existing.map((st) => st.id);
+
+        const incomingIds = subTodos.filter((st) => st.id).map((st) => st.id!);
+
+        // delete removed subtodos
+        const toDelete = existingIds.filter(
+          (eid) => !incomingIds.includes(eid)
+        );
+        if (toDelete.length > 0) {
+          await tx.subTodo.deleteMany({ where: { id: { in: toDelete } } });
+        }
+
+        // inside PATCH transaction
+        for (const st of subTodos) {
+          if (st.id && existingIds.includes(st.id)) {
+            // update
+            await tx.subTodo.update({
+              where: { id: st.id },
+              data: {
                 title: st.title,
+                description: st.description,
                 done: st.done ?? false,
-              })),
-            }
-          : undefined,
-        tag: tag
-          ? {
-              create: tag.map((t) => ({
-                name: t.name,
-                color: t.color,
-              })),
-            }
-          : undefined,
-      },
-      include: { subTodos: true, tag: true },
+              },
+            });
+          } else {
+            // create
+            await tx.subTodo.create({
+              data: {
+                title: st.title,
+                description: st.description,
+                done: st.done ?? false,
+                todoId: id,
+              },
+            });
+          }
+        }
+
+        // create new subtodos
+        const newSubs = subTodos.filter((st) => !st.id);
+        if (newSubs.length > 0) {
+          await tx.subTodo.createMany({
+            data: newSubs.map((st) => ({
+              title: st.title,
+              description: st.description,
+              done: st.done ?? false,
+              todoId: id, // Prisma converts to ObjectId internally
+            })),
+          });
+        }
+      }
+
+      // update todo itself
+      const updatedTodo = await tx.todo.update({
+        where: { id },
+        data: {
+          ...todoFields,
+          // tags: only create new for now
+          tag: tag
+            ? {
+                create: tag.map((t) => ({
+                  name: t.name,
+                  color: t.color,
+                })),
+              }
+            : undefined,
+        },
+        include: { subTodos: true, tag: true },
+      });
+
+      return updatedTodo;
     });
 
-    return NextResponse.json(todo, { status: 200 });
+    return NextResponse.json(updated, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
