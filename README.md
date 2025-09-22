@@ -8,10 +8,8 @@ Momo is a task management app that helps you organize tasks with dates, notes, a
 Implements the UI and task interactions using React and related libraries.
 
 🚧 B – Backend with Prisma:
-Adds a database backend with Prisma for persistent storage of tasks, notes, and todos.
+Adds a database backend with Prisma for persistent storage of tasks, notes, and todos. (zod, rhf, mongodb, next auth)
 
-🚧 C – T3 Stack:
-Full-stack implementation using the T3 stack (Next.js, Prisma, Tailwind, TRPC) for a modern, type-safe end-to-end solution.
 
 ## Getting Started
 
