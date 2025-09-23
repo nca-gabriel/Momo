@@ -12,8 +12,8 @@ export default function TagPage() {
   const { tags } = useTagContext();
 
   const params = useParams();
-  const tagName = params.name;
-  const tag = tags.find((l) => l.name === tagName);
+  const tagId = params.name;
+  const tag = tags.find((l) => l.id === tagId);
   const tagTodos = todos.filter((todo) => todo.tagId === tag?.id);
 
   const [drawer, setDrawer] = useState(false);

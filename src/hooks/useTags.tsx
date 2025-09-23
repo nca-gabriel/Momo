@@ -4,28 +4,28 @@ import { tagInput } from "@/utils/tag/tag.schema";
 
 const STORAGE_KEY = "tags";
 
-function initTags() {
+// Initialize tags from localStorage
+function initTags(): tagInput[] {
   if (typeof window !== "undefined") {
     localStorage.removeItem(STORAGE_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
-    const tags = raw ? JSON.parse(raw) : [];
+    let tags: tagInput[] = raw ? JSON.parse(raw) : [];
 
     if (tags.length === 0) {
       const defaultTag: tagInput = {
-        id: "3fd458cc-25a7-4494-b1ba-6dcb91fdf6a0", // fixed ID
+        id: "3fd458cc-25a7-4494-b1ba-6dcb91fdf6a0",
         name: "Getting Started",
         color: "#34D399",
         date: new Date(),
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([defaultTag]));
-      return [defaultTag];
+      tags = [defaultTag];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tags));
     }
 
-    return tags; // return existing tags properly
+    return tags;
   }
   return [];
 }
-
 export function useTags() {
   const [tags, dispatch] = useReducer(tagReducer, [], initTags);
 

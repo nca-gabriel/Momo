@@ -117,7 +117,7 @@ export default function Sidebar() {
                   <li key={tag.id}>
                     <div className="flex items-center justify-between">
                       <Link
-                        href={`/tags/${tag.name}`}
+                        href={`/tags/${tag.id}`}
                         className="flex items-center gap-3 px-2 py-1 hover:bg-gray-100 rounded flex-1"
                       >
                         <span
