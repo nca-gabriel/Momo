@@ -1,15 +1,13 @@
 "use client";
 
-import {
-  TodoData,
-  TodoForm,
-  todoForm,
-  SubTodoPatch,
-} from "@/utils/todo.schema";
-import { TagData } from "@/utils/tag.schema";
+import { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+
+import { TodoData, TodoForm, todoForm } from "@/utils/todo.schema";
+import { SubTodoPatch } from "@/utils/subtodo.schema";
+import { TagData } from "@/utils/tag.schema";
+import { useSubTodos } from "@/hooks/useTodos";
 
 type Props = {
   open: boolean;
@@ -47,6 +45,15 @@ export default function TodoForm1({
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "subTodos",
+  });
+
+  const subTodosData = watch("subTodos") ?? [];
+
+  const { addSub, updateSub, deleteSub } = useSubTodos(initValues?.id ?? "");
+
   useEffect(() => {
     if (initValues) {
       reset(initValues);
@@ -62,20 +69,10 @@ export default function TodoForm1({
     }
   }, [initValues, reset]);
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "subTodos",
-  });
-
   if (!open) return null;
 
   const submitHandler = (data: TodoForm) => {
-    const parsed = {
-      ...data,
-      todoDate: new Date(data.todoDate),
-    };
-    onSubmit(parsed);
-    alert("updated");
+    onSubmit({ ...data, todoDate: new Date(data.todoDate) });
 
     if (!initValues) {
       reset({
@@ -89,9 +86,52 @@ export default function TodoForm1({
     }
   };
 
+  const handleSubBlur = (current: SubTodoPatch, index: number) => {
+    if (!current.title?.trim()) return;
+
+    if (!initValues?.id) return; // parent todo must exist
+    const todoIdSafe = initValues.id;
+
+    if (!current.id) {
+      // CREATE NEW SUBTODO
+      addSub.mutate(
+        {
+          title: current.title,
+          description: current.description ?? "",
+          todoId: todoIdSafe, // link to parent
+          done: current.done ?? false,
+        },
+        {
+          onSuccess: (savedSubTodo) => {
+            // Replace the temporary RHF id with the real MongoDB _id
+            const updatedFields = [...fields];
+            updatedFields[index] = {
+              ...updatedFields[index],
+              id: savedSubTodo.id,
+            };
+            reset({ ...watch(), subTodos: updatedFields });
+
+            // Append a new empty subTodo input
+            append({ title: "", description: "" });
+          },
+        }
+      );
+    } else {
+      // UPDATE EXISTING SUBTODO
+      updateSub.mutate({
+        id: current.id ?? "", // must be MongoDB _id
+        subTodo: {
+          title: current.title,
+          description: current.description ?? "",
+          done: current.done ?? false,
+        },
+      });
+    }
+  };
+
   return (
     <main
-      className={`z-10 flex flex-col  ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200   max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto max-sm:overflow-y-auto transition-all duration-300 ${
+      className={`z-10 flex flex-col ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200 max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto transition-all duration-300 ${
         open ? "w-70" : ""
       }`}
     >
@@ -99,7 +139,7 @@ export default function TodoForm1({
         <h2 className="font-bold text-lg">Task</h2>
         <button
           onClick={onClose}
-          className=" text-gray-500 hover:text-violet-600 hover:font-semibold cursor-pointer"
+          className="text-gray-500 hover:text-violet-600 hover:font-semibold cursor-pointer"
         >
           ✕
         </button>
@@ -109,6 +149,7 @@ export default function TodoForm1({
         onSubmit={handleSubmit(submitHandler)}
         className="flex flex-col flex-auto gap-3"
       >
+        {/* Title */}
         <div className="flex flex-col">
           <input
             {...register("title")}
@@ -119,6 +160,8 @@ export default function TodoForm1({
             <p className="text-red-500 text-sm">{errors.title.message}</p>
           )}
         </div>
+
+        {/* Description */}
         <div className="flex-1">
           <textarea
             {...register("description")}
@@ -126,6 +169,8 @@ export default function TodoForm1({
             className="flex flex-1 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
           />
         </div>
+
+        {/* Todo Date */}
         <div>
           <input
             type="datetime-local"
@@ -136,6 +181,8 @@ export default function TodoForm1({
             <p className="text-red-500 text-sm">{errors.todoDate!.message}</p>
           )}
         </div>
+
+        {/* Tags */}
         <div className="flex flex-col gap-2">
           <label>Tags</label>
           <select
@@ -150,58 +197,44 @@ export default function TodoForm1({
           </select>
         </div>
 
+        {/* SubTodos */}
         <div>
           <h1 className="font-bold text-lg mt-2">Sub Todo:</h1>
           {fields.map((field, index) => {
-            const subTodosData = watch("subTodos") as SubTodoPatch[];
-            const dbId = subTodosData[index]?.id;
+            const current = subTodosData[index];
 
             return (
-              <div key={field.id} className="flex gap-5 ...">
-                {!dbId ? (
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="text-red-500 font-bold w-5 h-5"
-                  >
-                    ✕
-                  </button>
-                ) : (
-                  <input
-                    type="checkbox"
-                    checked={false}
-                    onChange={() => {
-                      if (
-                        confirm(
-                          `Are you sure you want to mark "${watch(
-                            `subTodos.${index}.title`
-                          )}" as done? This will remove it.`
-                        )
-                      ) {
-                        remove(index);
-                      }
-                    }}
-                    className="w-5 h-5 mt-1"
-                  />
-                )}
-
+              <div key={field.id} className="flex gap-5 mb-2 items-start">
                 <section>
                   <input
                     type="hidden"
-                    {...register(`subTodos.${index}.id` as const)}
+                    {...register(`subTodos.${index}.id`)}
                     defaultValue={field.id ?? undefined}
                   />
                   <input
-                    {...register(`subTodos.${index}.title` as const)}
+                    {...register(`subTodos.${index}.title`)}
                     placeholder="Subtodo title"
-                    className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black"
+                    onBlur={() => handleSubBlur(current, index)}
+                    className="border border-gray-200 p-1 rounded-md focus-within:text-black"
                   />
                   <input
-                    {...register(`subTodos.${index}.description` as const)}
+                    {...register(`subTodos.${index}.description`)}
                     placeholder="Subtodo description"
-                    className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black"
+                    onBlur={() => handleSubBlur(current, index)}
+                    className="border border-gray-200 p-1 rounded-md focus-within:text-black"
                   />
                 </section>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    remove(index);
+                    if (current.id) deleteSub.mutate(current.id);
+                  }}
+                  className="text-red-500 font-bold w-5 h-5 mt-1"
+                >
+                  ✕
+                </button>
               </div>
             );
           })}
@@ -216,7 +249,8 @@ export default function TodoForm1({
           </button>
         </div>
 
-        <section>
+        {/* Submit / Delete */}
+        <section className="flex gap-2 mt-2">
           <button
             type="submit"
             className="bg-violet-600 text-white px-4 py-1 flex-1 rounded-md cursor-pointer hover:bg-violet-800 transition-colors duration-200 delay-100"

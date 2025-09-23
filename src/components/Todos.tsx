@@ -5,7 +5,7 @@ import { TodoData } from "@/utils/todo.schema";
 import { TagData } from "@/utils/tag.schema";
 import TodoForm from "./TodoForm";
 import Image from "next/image";
-import { useTodos } from "@/hooks/useTodos";
+import { useTodos, useTodo } from "@/hooks/useTodos";
 import { isToday, isThisWeek, isTomorrow } from "@/utils/date";
 
 type DateFilter = "today" | "tomorrow" | "thisWeek";
@@ -18,7 +18,10 @@ type Props = {
 
 export default function Todos({ todos, tags, filterBy }: Props) {
   const [drawer, setDrawer] = useState(false);
-  const [editingTodo, setEditingTodo] = useState<TodoData | null>(null);
+  const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
+
+  // fetch single todo when editing
+  const { data: editingTodo } = useTodo(editingTodoId ?? "");
 
   const { addMutation, updateMutation, deleteMutation } = useTodos();
 
@@ -36,7 +39,6 @@ export default function Todos({ todos, tags, filterBy }: Props) {
   };
 
   const filteredTodos = filterTodos();
-  console.log(filteredTodos);
 
   return (
     <main className="debug3 flex flex-1">
@@ -45,7 +47,7 @@ export default function Todos({ todos, tags, filterBy }: Props) {
           <button
             onClick={() => {
               setDrawer(true);
-              setEditingTodo(null);
+              setEditingTodoId(null);
             }}
             className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-violet-600 transition-colors cursor-pointer"
           >
@@ -68,7 +70,7 @@ export default function Todos({ todos, tags, filterBy }: Props) {
                     todo.completed ? "opacity-50" : ""
                   }`}
                   onClick={() => {
-                    setEditingTodo(todo);
+                    setEditingTodoId(todo.id);
                     setDrawer(true);
                   }}
                 >
@@ -97,7 +99,7 @@ export default function Todos({ todos, tags, filterBy }: Props) {
                     </div>
                     <button
                       onClick={() => {
-                        setEditingTodo(todo);
+                        setEditingTodoId(todo.id);
                         setDrawer(true);
                       }}
                     >
@@ -155,10 +157,10 @@ export default function Todos({ todos, tags, filterBy }: Props) {
       {drawer && (
         <TodoForm
           open={drawer}
-          initValues={editingTodo}
+          initValues={editingTodo ?? null}
           tags={tags}
           onClose={() => {
-            setEditingTodo(null);
+            setEditingTodoId(null);
             setDrawer(false);
           }}
           onSubmit={(data) => {
@@ -171,7 +173,7 @@ export default function Todos({ todos, tags, filterBy }: Props) {
           onDelete={(id) => {
             deleteMutation.mutate(id, {
               onSuccess: () => {
-                setEditingTodo(null);
+                setEditingTodoId(null);
               },
             });
           }}
