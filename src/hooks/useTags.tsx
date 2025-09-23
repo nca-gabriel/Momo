@@ -6,6 +6,7 @@ const STORAGE_KEY = "tags";
 
 function initTags() {
   if (typeof window !== "undefined") {
+    localStorage.removeItem(STORAGE_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
     const tags = raw ? JSON.parse(raw) : [];
 

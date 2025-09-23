@@ -4,39 +4,37 @@ import { todoInput } from "@/utils/todo/todo.schema";
 
 const STORAGE_KEY = "todos";
 
-function initTodos() {
-  if (typeof window !== "undefined") {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const todos = raw ? JSON.parse(raw) : [];
+export function useTodos() {
+  const [todos, dispatch] = useReducer(todoReducer, []);
 
-    if (todos.length === 0) {
+  useEffect(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    let storedTodos: todoInput[] = raw ? JSON.parse(raw) : [];
+
+    if (storedTodos.length === 0) {
       const defaultTodo: todoInput = {
-        id: "default-todo-1", // or your ID generation logic
+        id: crypto.randomUUID(),
         title: "Welcome! 👋",
         details: "This is a default todo to get you started.",
         status: false,
         date: new Date(),
         subTodos: [
           {
-            id: "default-subtodo-1",
+            id: crypto.randomUUID(),
             title: "This is a subtask",
             details: "details about this subtask",
             status: false,
           },
         ],
-        tagId: "3fd458cc-25a7-4494-b1ba-6dcb91fdf6a0",
+        tagId: "3fd458cc-25a7-4494-b1ba-6dcb91fdf6a0", // fixed tag ID
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([defaultTodo]));
-      return [defaultTodo];
+      storedTodos = [defaultTodo];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(storedTodos));
     }
 
-    return todos;
-  }
-  return [];
-}
-
-export function useTodos() {
-  const [todos, dispatch] = useReducer(todoReducer, [], initTodos);
+    dispatch({ type: "INIT_TODOS", payload: storedTodos });
+  }, []);
 
   // persist on change
   useEffect(() => {
