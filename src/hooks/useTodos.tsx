@@ -11,7 +11,7 @@ function initTodos() {
 
     if (todos.length === 0) {
       const defaultTodo: todoInput = {
-        id: crypto.randomUUID(), // or your ID generation logic
+        id: "default-todo-1", // or your ID generation logic
         title: "Welcome! 👋",
         details: "This is a default todo to get you started.",
         status: false,
