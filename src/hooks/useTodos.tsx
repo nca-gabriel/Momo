@@ -18,7 +18,7 @@ function initTodos() {
         date: new Date(),
         subTodos: [
           {
-            id: crypto.randomUUID(),
+            id: "default-subtodo-1",
             title: "This is a subtask",
             details: "details about this subtask",
             status: false,
