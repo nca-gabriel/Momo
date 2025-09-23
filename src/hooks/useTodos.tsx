@@ -7,7 +7,30 @@ const STORAGE_KEY = "todos";
 function initTodos() {
   if (typeof window !== "undefined") {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const todos = raw ? JSON.parse(raw) : [];
+
+    if (todos.length === 0) {
+      const defaultTodo: todoInput = {
+        id: crypto.randomUUID(), // or your ID generation logic
+        title: "Welcome! 👋",
+        details: "This is a default todo to get you started.",
+        status: false,
+        date: new Date(),
+        subTodos: [
+          {
+            id: crypto.randomUUID(),
+            title: "This is a subtask",
+            details: "details about this subtask",
+            status: false,
+          },
+        ],
+        tagId: "3fd458cc-25a7-4494-b1ba-6dcb91fdf6a0",
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([defaultTodo]));
+      return [defaultTodo];
+    }
+
+    return todos;
   }
   return [];
 }

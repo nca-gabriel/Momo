@@ -7,7 +7,20 @@ const STORAGE_KEY = "tags";
 function initTags() {
   if (typeof window !== "undefined") {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const tags = raw ? JSON.parse(raw) : [];
+
+    if (tags.length === 0) {
+      const defaultTag: tagInput = {
+        id: "3fd458cc-25a7-4494-b1ba-6dcb91fdf6a0", // fixed ID
+        name: "Getting Started",
+        color: "#34D399",
+        date: new Date(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([defaultTag]));
+      return [defaultTag];
+    }
+
+    return tags; // return existing tags properly
   }
   return [];
 }
