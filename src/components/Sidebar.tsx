@@ -7,6 +7,9 @@ import { useTagContext, useTodoContext } from "@/context/AppProvider";
 import TagForm from "./TagForm";
 import { tagInput } from "@/utils/tag/tag.schema";
 
+// lucide-react icons
+import { Calendar, FileText, ListTodo, Clock } from "lucide-react";
+
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [opentag, setOpentag] = useState(false);
@@ -16,10 +19,10 @@ export default function Sidebar() {
   const { todos } = useTodoContext();
 
   const navItems = [
-    { href: "/", label: "Today" },
-    { href: "/upcoming", label: "Upcoming" },
-    { href: "/calendar", label: "Calendar" },
-    { href: "/notes", label: "Notes" },
+    { href: "/", label: "Today", icon: ListTodo },
+    { href: "/upcoming", label: "Upcoming", icon: Clock },
+    { href: "/calendar", label: "Calendar", icon: Calendar },
+    { href: "/notes", label: "Notes", icon: FileText },
   ];
 
   const [mounted, setMounted] = useState(false);
@@ -35,13 +38,10 @@ export default function Sidebar() {
 
     switch (href) {
       case "/":
-        // Only today tasks
         return todos.filter(
           (t) => new Date(t.date).toDateString() === today.toDateString()
         ).length;
-
       case "/upcoming":
-        // Today + Tomorrow + This week
         return todos.filter((t) => {
           const d = new Date(t.date);
           return (
@@ -50,10 +50,8 @@ export default function Sidebar() {
             (d > tomorrow && d <= endOfWeek)
           );
         }).length;
-
       case "/notes":
-        return 0; // don't show count
-
+        return 0;
       default:
         return todos.length;
     }
@@ -61,26 +59,31 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`h-screen border-r border-gray-100 transition-all duration-300 ${
-        collapsed ? "w-16 max-sm:w-11 " : "w-72 bg-gray-50"
+      className={`h-screen transition-all duration-300 ${
+        collapsed ? "w-24 max-sm:w-16" : "w-72 bg-gray-50"
       } shrink-0 flex flex-col`}
     >
       {/* Header */}
-      <section className="flex items-center justify-between p-4">
+      <section
+        className={`flex items-center p-4 ${
+          collapsed ? "justify-center" : "justify-between"
+        }`}
+      >
         {!collapsed && <p className="font-bold">Menu</p>}
         <button onClick={() => setCollapsed(!collapsed)}>
           <Image src="/burger.svg" alt="burger-icon" width={24} height={24} />
         </button>
       </section>
 
-      {!collapsed && (
+      {/* Expanded */}
+      {!collapsed ? (
         <>
           <div className="flex-1 overflow-y-auto">
             {/* Nav */}
             <nav className="flex-1">
               <p className="px-4 text-xs font-semibold text-gray-500">TASKS</p>
               <ul className="mt-2 space-y-1">
-                {navItems.map(({ href, label }) => {
+                {navItems.map(({ href, label, icon: Icon }) => {
                   const count = getTodoCountForRoute(href);
                   return (
                     <li key={href}>
@@ -92,10 +95,13 @@ export default function Sidebar() {
                             : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                         }`}
                       >
-                        <span>{label}</span>
+                        <span className="flex items-center gap-2">
+                          <Icon size={18} />
+                          {label}
+                        </span>
                         {count > 0 && (
                           <span
-                            className={`text-center w-6 font-semibold rounded  ${
+                            className={`text-center w-6 font-semibold rounded ${
                               pathname === href ? "bg-white" : "bg-gray-200"
                             }`}
                           >
@@ -110,7 +116,7 @@ export default function Sidebar() {
             </nav>
 
             {/* Tags */}
-            <section className="px-4 py-6 ">
+            <section className="px-4 py-6">
               <p className="text-xs font-semibold text-gray-500">TAGS</p>
               <ul className="mt-2 space-y-1">
                 {tags.map((tag) => (
@@ -135,7 +141,7 @@ export default function Sidebar() {
                             setOpentag(true);
                           }
                         }}
-                        className="ml-2 px-2 py-1 text-sm text-gray-500 hover:text-black"
+                        className="ml-2 px-2 py-1 text-sm text-gray-500 hover:text-violet-600"
                       >
                         Edit
                       </button>
@@ -148,7 +154,7 @@ export default function Sidebar() {
                       setEditingtag(null);
                       setOpentag((prev) => !prev);
                     }}
-                    className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-violet-700"
                   >
                     + Add a new tag
                   </button>
@@ -170,7 +176,7 @@ export default function Sidebar() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-gray-200 p-4 flex items-center gap-2 ">
+          <div className="border-t border-gray-200 p-4 flex items-center gap-2">
             <Image
               alt="Profile"
               src="/pfp.png"
@@ -182,6 +188,58 @@ export default function Sidebar() {
               <p className="text-sm font-medium">Neil Christian A. Gabriel</p>
               <p className="text-xs text-gray-500">ncagabriel02@gmail.com</p>
             </div>
+          </div>
+        </>
+      ) : (
+        /* Collapsed */
+        <>
+          {/* Nav (icon + label stacked) */}
+          <nav className="flex flex-col items-center gap-4 mt-4">
+            {navItems.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`flex flex-col items-center gap-1 rounded-lg p-2 text-xs ${
+                  pathname === href
+                    ? "bg-gray-200 text-gray-700"
+                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                }`}
+                title={label}
+              >
+                <Icon size={20} />
+                <span className="text-[10px]">{label}</span>
+              </Link>
+            ))}
+          </nav>
+
+          {/* Tags (color + name stacked) */}
+          <section className="mt-6 flex flex-col items-center gap-3">
+            {tags.map((tag) => (
+              <Link
+                key={tag.id}
+                href={`/tags/${tag.id}`}
+                className="flex flex-col items-center text-[10px] text-gray-600 hover:text-black"
+                title={tag.name}
+              >
+                <span
+                  className="w-5 h-5 rounded-sm"
+                  style={{ backgroundColor: tag.color }}
+                />
+                <span className="text-center">{tag.name}</span>
+              </Link>
+            ))}
+          </section>
+
+          {/* Footer (avatar + name below) */}
+          <div className="mt-auto mb-4 flex flex-col items-center text-center">
+            <Image
+              alt="Profile"
+              src="/pfp.png"
+              width={32}
+              height={32}
+              className="rounded-full object-cover"
+            />
+            <p className="mt-1 text-[10px] font-medium">Neil</p>
           </div>
         </>
       )}

@@ -105,7 +105,7 @@ export default function Page() {
         {/* Add note button */}
         <button
           onClick={handleAdd}
-          className="flex items-center justify-center w-full h-40 text-6xl bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+          className="flex items-center justify-center w-full  text-6xl bg-gray-200 rounded-lg hover:bg-gray-300 transition"
         >
           +
         </button>

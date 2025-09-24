@@ -33,7 +33,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex  w-full min-h-full p-4">
+    <main className="flex  w-full min-h-full p-2">
       <div className="flex flex-col flex-1 min-h-full">
         <header className="">
           <h1 className="text-4xl font-semibold">Today!</h1>
