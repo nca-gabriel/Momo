@@ -7,7 +7,6 @@ const STORAGE_KEY = "tags";
 // Initialize tags from localStorage
 function initTags(): tagInput[] {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(STORAGE_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
     let tags: tagInput[] = raw ? JSON.parse(raw) : [];
 

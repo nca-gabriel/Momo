@@ -6,7 +6,6 @@ const STORAGE_KEY = "todos";
 
 function initTodos(): todoInput[] {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(STORAGE_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
     let todos: todoInput[] = raw ? JSON.parse(raw) : [];
 
