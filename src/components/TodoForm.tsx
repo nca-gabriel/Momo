@@ -11,8 +11,8 @@ import { useSubTodos } from "@/hooks/useTodos";
 
 type Props = {
   open: boolean;
-  initValues: TodoData | null; // 1 todo
-  tags: TagData[]; // arr of tags
+  initValues: TodoData | null;
+  tags: TagData[];
   onClose: () => void;
   onSubmit: (data: TodoForm) => void;
   onDelete: (id: string) => void;
@@ -45,19 +45,17 @@ export default function TodoForm1({
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, prepend, remove } = useFieldArray({
     control,
     name: "subTodos",
   });
 
   const subTodosData = watch("subTodos") ?? [];
-
   const { addSub, updateSub, deleteSub } = useSubTodos(initValues?.id ?? "");
 
   useEffect(() => {
-    if (initValues) {
-      reset(initValues);
-    } else {
+    if (initValues) reset(initValues);
+    else
       reset({
         title: "",
         description: "",
@@ -66,15 +64,13 @@ export default function TodoForm1({
         tag: [],
         subTodos: [],
       });
-    }
   }, [initValues, reset]);
 
   if (!open) return null;
 
   const submitHandler = (data: TodoForm) => {
     onSubmit({ ...data, todoDate: new Date(data.todoDate) });
-
-    if (!initValues) {
+    if (!initValues)
       reset({
         title: "",
         description: "",
@@ -83,43 +79,32 @@ export default function TodoForm1({
         tag: [],
         subTodos: [],
       });
-    }
   };
 
   const handleSubBlur = (current: SubTodoPatch, index: number) => {
-    if (!current.title?.trim()) return;
-
-    if (!initValues?.id) return; // parent todo must exist
-    const todoIdSafe = initValues.id;
+    if (!initValues?.id) return;
 
     if (!current.id) {
-      // CREATE NEW SUBTODO
       addSub.mutate(
         {
           title: current.title,
           description: current.description ?? "",
-          todoId: todoIdSafe, // link to parent
+          todoId: initValues!.id,
           done: current.done ?? false,
         },
         {
           onSuccess: (savedSubTodo) => {
-            // Replace the temporary RHF id with the real MongoDB _id
-            const updatedFields = [...fields];
-            updatedFields[index] = {
-              ...updatedFields[index],
-              id: savedSubTodo.id,
-            };
+            // Replace temp RHF field with DB values including id
+            const updatedFields = [...(watch("subTodos") ?? [])];
+            updatedFields[index] = { ...updatedFields[index], ...savedSubTodo };
             reset({ ...watch(), subTodos: updatedFields });
-
-            // Append a new empty subTodo input
-            append({ title: "", description: "" });
           },
         }
       );
     } else {
-      // UPDATE EXISTING SUBTODO
+      // PATCH
       updateSub.mutate({
-        id: current.id ?? "", // must be MongoDB _id
+        id: current.id,
         subTodo: {
           title: current.title,
           description: current.description ?? "",
@@ -149,104 +134,153 @@ export default function TodoForm1({
         onSubmit={handleSubmit(submitHandler)}
         className="flex flex-col flex-auto gap-3"
       >
-        {/* Title */}
-        <div className="flex flex-col">
-          <input
-            {...register("title")}
-            placeholder="Enter Title"
-            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-          />
-          {errors.title && (
-            <p className="text-red-500 text-sm">{errors.title.message}</p>
-          )}
-        </div>
+        <section>
+          {/* Title */}
+          <div className="flex flex-col">
+            <input
+              {...register("title")}
+              placeholder="Enter Title"
+              className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+            />
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title.message}</p>
+            )}
+          </div>
 
-        {/* Description */}
-        <div className="flex-1">
-          <textarea
-            {...register("description")}
-            placeholder="Enter Description"
-            className="flex flex-1 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-          />
-        </div>
+          {/* Description */}
+          <div className="flex-1">
+            <textarea
+              {...register("description")}
+              placeholder="Enter Description"
+              className="flex flex-1 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+            />
+          </div>
 
-        {/* Todo Date */}
-        <div>
-          <input
-            type="datetime-local"
-            {...register("todoDate")}
-            className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
-          />
-          {errors.todoDate && (
-            <p className="text-red-500 text-sm">{errors.todoDate!.message}</p>
-          )}
-        </div>
+          {/* Todo Date */}
+          <div>
+            <input
+              type="datetime-local"
+              {...register("todoDate")}
+              className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
+            />
+            {errors.todoDate && (
+              <p className="text-red-500 text-sm">{errors.todoDate!.message}</p>
+            )}
+          </div>
 
-        {/* Tags */}
-        <div className="flex flex-col gap-2">
-          <label>Tags</label>
-          <select
-            {...register("tag")}
-            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-          >
-            {tags.map((tag) => (
-              <option key={tag.id} value={tag.id} className="bg-blue-200">
-                {tag.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          {/* Tags */}
+          <div className="flex flex-col gap-2">
+            <label>Tags</label>
+            <select
+              {...register("tag")}
+              className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+            >
+              {tags.map((tag) => (
+                <option key={tag.id} value={tag.id} className="bg-blue-200">
+                  {tag.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
 
         {/* SubTodos */}
-        <div>
-          <h1 className="font-bold text-lg mt-2">Sub Todo:</h1>
-          {fields.map((field, index) => {
-            const current = subTodosData[index];
+        <div className="flex flex-col w-full">
+          <h1 className="font-bold text-lg mt-2">Subtask:</h1>
 
-            return (
-              <div key={field.id} className="flex gap-5 mb-2 items-start">
-                <section>
-                  <input
-                    type="hidden"
-                    {...register(`subTodos.${index}.id`)}
-                    defaultValue={field.id ?? undefined}
-                  />
-                  <input
-                    {...register(`subTodos.${index}.title`)}
-                    placeholder="Subtodo title"
-                    onBlur={() => handleSubBlur(current, index)}
-                    className="border border-gray-200 p-1 rounded-md focus-within:text-black"
-                  />
-                  <input
-                    {...register(`subTodos.${index}.description`)}
-                    placeholder="Subtodo description"
-                    onBlur={() => handleSubBlur(current, index)}
-                    className="border border-gray-200 p-1 rounded-md focus-within:text-black"
-                  />
-                </section>
+          {/* Add button */}
+          <div className="flex justify-start border-gray-200 text-gray-500 rounded-md focus-within:text-black mb-2">
+            <button
+              type="button"
+              onClick={() =>
+                prepend({ title: "", description: "", done: false })
+              }
+              className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer p-1"
+            >
+              <span className="text-2xl font-bold">+</span>
+              <span>Add New Subtask</span>
+            </button>
+          </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    remove(index);
-                    if (current.id) deleteSub.mutate(current.id);
-                  }}
-                  className="text-red-500 font-bold w-5 h-5 mt-1"
-                >
-                  ✕
-                </button>
-              </div>
-            );
-          })}
+          {/* Subtodos container */}
+          <section className="max-h-52 overflow-y-auto overflow-x-hidden flex flex-col gap-2">
+            {fields
+              .map((field, index) => ({ field, index }))
+              .sort(
+                (a, b) =>
+                  (subTodosData[a.index].done ? 1 : -1) -
+                  (subTodosData[b.index].done ? 1 : -1)
+              )
+              .map(({ field, index }) => {
+                const current = subTodosData[index];
+                const isNew = !current.id;
 
-          <button
-            type="button"
-            onClick={() => append({ title: "", description: "" })}
-            className="flex items-center gap-1 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors cursor-pointer p-1"
-          >
-            <span className="text-2xl font-bold">+</span>
-            <span>Add New Subtask</span>
-          </button>
+                return (
+                  <div
+                    key={field.id}
+                    className={`flex sm:flex-row gap-2 mb-2 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black
+    ${current.done ? "opacity-50" : ""}`}
+                  >
+                    {isNew ? (
+                      <button
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          remove(index);
+                        }}
+                        className="text-red-500 font-bold w-5 h-5 mt-1"
+                      >
+                        ✕
+                      </button>
+                    ) : (
+                      <input
+                        type="checkbox"
+                        checked={current.done}
+                        onChange={() => {
+                          if (
+                            confirm(
+                              `Are you sure you want to mark "${current.title}" as done? This will update it.`
+                            )
+                          ) {
+                            updateSub.mutate({
+                              id: current.id!,
+                              subTodo: { ...current, done: !current.done },
+                            });
+                          }
+                        }}
+                        className="w-5 h-5 mt-1 cursor-pointer accent-violet-600"
+                      />
+                    )}
+
+                    <div
+                      className={`flex-1 flex flex-col gap-1 min-w-0
+      ${current.done ? "line-through text-gray-400" : ""}`}
+                      tabIndex={-1}
+                      onBlur={(e) => {
+                        if (
+                          !e.currentTarget.contains(e.relatedTarget as Node)
+                        ) {
+                          handleSubBlur(current, index);
+                        }
+                      }}
+                    >
+                      <input
+                        {...register(`subTodos.${index}.title`)}
+                        placeholder="Subtodo title"
+                        className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black w-full"
+                      />
+                      <input
+                        {...register(`subTodos.${index}.description`)}
+                        placeholder="Subtodo description"
+                        className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black w-full"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+          </section>
         </div>
 
         {/* Submit / Delete */}

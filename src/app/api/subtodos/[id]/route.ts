@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/utils/prisma";
-import { subTodoForm } from "@/utils/subtodo.schema";
+import { subTodoPatch } from "@/utils/subtodo.schema";
 
 export async function PATCH(
   req: Request,
@@ -10,7 +10,7 @@ export async function PATCH(
   const body = await req.json();
 
   // validate only editable fields
-  const result = subTodoForm.safeParse(body);
+  const result = subTodoPatch.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
       { errors: result.error.format() },

@@ -14,9 +14,10 @@ type Props = {
   todos: TodoData[];
   tags: TagData[];
   filterBy: DateFilter;
+  title: string;
 };
 
-export default function Todos({ todos, tags, filterBy }: Props) {
+export default function Todos({ todos, tags, filterBy, title }: Props) {
   const [drawer, setDrawer] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
 
@@ -41,8 +42,11 @@ export default function Todos({ todos, tags, filterBy }: Props) {
   const filteredTodos = filterTodos();
 
   return (
-    <main className="debug3 flex flex-1">
-      <div className="flex-1">
+    <main className="flex flex-1">
+      <div className="flex-1 ">
+        <header>
+          <h1 className="text-4xl font-semibold">{title}</h1>
+        </header>
         <div className="flex justify-end">
           <button
             onClick={() => {
@@ -128,11 +132,23 @@ export default function Todos({ todos, tags, filterBy }: Props) {
                     </div>
 
                     {todo.subTodos?.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="bg-gray-100 text-center w-5 font-light rounded">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <span>Subtasks:</span>
+                        <span className="flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded-2xl font-medium">
+                          <svg
+                            className="w-3 h-3 text-violet-600"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-7.25 7.25a1 1 0 01-1.414 0l-3.25-3.25a1 1 0 111.414-1.414L9 11.586l6.543-6.543a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          {todo.subTodos.filter((sub) => sub.done).length} /{" "}
                           {todo.subTodos.length}
                         </span>
-                        <span>Subtask</span>
                       </div>
                     )}
 

@@ -17,11 +17,8 @@ export default function TodosClient({
   const todos = todosQuery.data ?? initialTodos;
 
   return (
-    <main>
-      <header>
-        <h3>Today</h3>
-      </header>
-      <Todos todos={todos} tags={initialTags} filterBy="today" />
+    <main className="">
+      <Todos todos={todos} tags={initialTags} filterBy="today" title="Today!" />
     </main>
   );
 }

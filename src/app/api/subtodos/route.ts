@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/utils/prisma";
-import { subTodoData } from "@/utils/subtodo.schema";
+import { subTodoForm } from "@/utils/subtodo.schema";
 
 export async function POST(req: Request) {
-  const body = await req.json;
+  const body = await req.json();
 
-  const result = subTodoData.safeParse(body);
+  const result = subTodoForm.safeParse(body);
 
   if (!result.success) {
     return NextResponse.json(

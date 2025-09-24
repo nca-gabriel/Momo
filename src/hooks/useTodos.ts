@@ -77,8 +77,7 @@ export function useSubTodos(todoId: string) {
       const res = await axios.post(`/api/subtodos`, { ...subTodo, todoId });
       return res.data;
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["todo", todoId] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
   });
 
   const updateSub = useMutation({
@@ -92,8 +91,10 @@ export function useSubTodos(todoId: string) {
       const res = await axios.patch(`/api/subtodos/${id}`, subTodo);
       return res.data;
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["todo", todoId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["todo", todoId] });
+    },
   });
 
   const deleteSub = useMutation({
@@ -101,8 +102,10 @@ export function useSubTodos(todoId: string) {
       await axios.delete(`/api/subtodos/${id}`);
       return id;
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["todo", todoId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["todo", todoId] });
+    },
   });
 
   return { addSub, updateSub, deleteSub };

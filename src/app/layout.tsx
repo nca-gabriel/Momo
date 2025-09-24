@@ -33,7 +33,7 @@ export default function RootLayout({
           <div className="flex min-h-screen w-full">
             <div className="flex w-full max-w-screen-2xl mx-auto gap-2">
               <Sidebar />
-              <main className="flex-1 ">{children}</main>
+              <main className="flex-1 p-4">{children}</main>
             </div>
           </div>
         </QueryProvider>

@@ -4,11 +4,11 @@ export const subTodoForm = z.object({
   title: z.string().min(1),
   description: z.string().nullish(),
   done: z.boolean().optional(),
+  todoId: z.string(),
 });
 
 export const subTodoData = subTodoForm.extend({
   id: z.string(),
-  todoId: z.string(),
   createdAt: z.coerce.date(),
 });
 
