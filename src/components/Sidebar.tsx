@@ -10,6 +10,8 @@ import { tagInput } from "@/utils/tag/tag.schema";
 // lucide-react icons
 import { Calendar, FileText, ListTodo, Clock } from "lucide-react";
 
+const STORAGE_KEY = "sidebar-collapsed";
+
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [opentag, setOpentag] = useState(false);
@@ -17,6 +19,22 @@ export default function Sidebar() {
   const { tags } = useTagContext();
   const [editingtag, setEditingtag] = useState<tagInput | null>(null);
   const { todos } = useTodoContext();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw !== null) {
+        setCollapsed(JSON.parse(raw));
+      }
+    }
+  }, []);
+
+  // Save state when it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collapsed));
+    }
+  }, [collapsed]);
 
   const navItems = [
     { href: "/", label: "Today", icon: ListTodo },
