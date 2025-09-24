@@ -26,7 +26,7 @@ export default function TagPage() {
   if (!tag) return <p>tag not found</p>;
 
   return (
-    <main className="flex w-full min-h-full p-4">
+    <main className="flex w-full min-h-full p-2">
       <div className="flex flex-col flex-1 min-h-full">
         <header className="">
           <h1 className="text-4xl font-semibold flex items-center gap-2">

@@ -158,7 +158,7 @@ export default function Upcoming() {
   );
 
   return (
-    <main className="flex w-full min-h-full p-4">
+    <main className="flex w-full min-h-full p-2">
       <div className="flex flex-col flex-1 min-h-full">
         <header className="mb-6">
           <h1 className="text-4xl font-semibold">Upcoming</h1>

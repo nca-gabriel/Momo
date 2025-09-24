@@ -32,7 +32,7 @@ export default function Page() {
   };
 
   return (
-    <main className="flex w-full min-h-full p-4 flex-col gap-10">
+    <main className="flex w-full min-h-full p-2 flex-col gap-10">
       <header>
         <h1 className="text-4xl font-semibold">Sticky Notes!</h1>
       </header>
