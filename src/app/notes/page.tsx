@@ -44,7 +44,7 @@ export default function Page() {
           return (
             <div
               key={note.id}
-              className="p-4 rounded-lg shadow-md relative"
+              className="p-4 rounded-lg shadow-md relative h-60"
               style={{ backgroundColor: note.color, minHeight: "100px" }}
               onClick={() => setEditingId(note.id)}
             >
@@ -105,7 +105,7 @@ export default function Page() {
         {/* Add note button */}
         <button
           onClick={handleAdd}
-          className="flex items-center justify-center w-full  text-6xl bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+          className="flex items-center justify-center w-full  text-6xl h-60 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
         >
           +
         </button>

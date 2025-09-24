@@ -4,10 +4,25 @@ import { noteInput, noteSchema } from "@/utils/note/note.schema";
 
 const STORAGE_KEY = "notes";
 
-function initNotes() {
+function initNotes(): noteInput[] {
   if (typeof window !== "undefined") {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    let notes: noteInput[] = raw ? JSON.parse(raw) : [];
+
+    if (notes.length === 0) {
+      const defaultNote: noteInput = {
+        id: crypto.randomUUID(),
+        name: "Welcome to Notes",
+        description:
+          "This is your first sticky note. You can edit or delete me.",
+        color: stickyColors[0], // yellow
+        date: new Date(),
+      };
+      notes = [defaultNote];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    }
+
+    return notes;
   }
   return [];
 }
