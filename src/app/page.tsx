@@ -12,7 +12,7 @@ export default async function page() {
 
   const todos = todosRaw.map((todo) => ({
     ...todo,
-    tag: tags.find((tag) => tag.id === todo.tagId) ?? null, // ✅ single object
+    tags: tags.find((tag) => tag.id === todo.tagId) ?? null, // ✅ single object
   }));
 
   // validate from db

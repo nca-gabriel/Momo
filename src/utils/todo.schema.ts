@@ -8,14 +8,14 @@ export const todoForm = z.object({
   completed: z.boolean().optional(),
   todoDate: z.coerce.date(),
   subTodos: z.array(subTodoPatch).optional(), // for creating nested subtodos
-  tagId: z.string().optional(),
+  tagId: z.string().nullish(), // only store the FK in form
 });
 
 export const todoData = todoForm.extend({
   id: z.string(),
   createdAt: z.coerce.date(),
   subTodos: z.array(subTodoData), // full subTodo info when fetching/updating
-  tags: tagData.optional(),
+  tags: tagData.nullish(),
 });
 
 export const TodoDataArr = z.array(todoData);

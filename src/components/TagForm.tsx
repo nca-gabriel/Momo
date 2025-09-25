@@ -96,7 +96,7 @@ export default function TagForm({
       <div className="flex gap-2">
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="bg-violet-600 text-white px-4 py-1 flex-1 rounded-md cursor-pointer hover:bg-violet-800 transition-colors duration-200 delay-100"
         >
           {initValues ? "Update" : "Save"}
         </button>
@@ -105,7 +105,7 @@ export default function TagForm({
           <button
             type="button"
             onClick={() => handleDelete(initValues.id)}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="bg-gray-300 text-gray-500 px-4 py-1 flex-1 rounded hover:bg-gray-600 hover:text-white transition-colors duration-200 cursor-pointer"
           >
             Delete
           </button>

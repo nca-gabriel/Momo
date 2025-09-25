@@ -19,7 +19,8 @@ model Todo {
   description String?
   completed   Boolean   @default(false)
   subTodos    SubTodo[]
-  tagId       String    @db.ObjectId //ref
+  tagId       String?   @db.ObjectId
+  tag         Tag?      @relation(fields: [tagId], references: [id]) // many-to-one
   todoDate    DateTime
   createdAt   DateTime  @default(now())
 }
@@ -39,6 +40,7 @@ model Tag {
   name      String
   color     String
   createdAt DateTime @default(now())
+  todos     Todo[] // one-to-many
 }
 
 model Notes {

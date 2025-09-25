@@ -65,7 +65,7 @@ export default function Todos({ todos, tags, filterBy, title }: Props) {
             <li className="p-2 text-gray-500">No tasks yet</li>
           ) : (
             filteredTodos.map((todo) => {
-              const todoTags = tags.filter((l) => l.todoId === todo.id);
+              const todoTag = tags.find((tag) => tag.id === todo.tagId);
 
               return (
                 <li
@@ -152,15 +152,15 @@ export default function Todos({ todos, tags, filterBy, title }: Props) {
                       </div>
                     )}
 
-                    {todoTags.map((tag) => (
-                      <div key={tag.id} className="flex items-center gap-2">
+                    {todoTag && (
+                      <div className="flex items-center gap-2">
                         <span
                           className="inline-block w-5 h-5 rounded-sm"
-                          style={{ backgroundColor: tag.color }}
+                          style={{ backgroundColor: todoTag.color }}
                         />
-                        <span>{tag.name}</span>
+                        <span>{todoTag.name}</span>
                       </div>
-                    ))}
+                    )}
                   </section>
                 </li>
               );

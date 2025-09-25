@@ -40,7 +40,7 @@ export default function TodoForm1({
       description: "",
       completed: false,
       todoDate: new Date(),
-      tags: [],
+      tagId: "",
       subTodos: [],
     },
   });
@@ -65,7 +65,7 @@ export default function TodoForm1({
         description: "",
         completed: false,
         todoDate: new Date(),
-        tags: [],
+        tagId: "",
         subTodos: [],
       });
   }, [initValues, reset]);
@@ -80,7 +80,7 @@ export default function TodoForm1({
         description: "",
         completed: false,
         todoDate: new Date(),
-        tags: [],
+        tagId: "",
         subTodos: [],
       });
   };
@@ -176,7 +176,7 @@ export default function TodoForm1({
           <div className="flex flex-col gap-2">
             <label>Tags</label>
             <select
-              {...register("tagIds")}
+              {...register("tagId")}
               className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
             >
               {tags.map((tag) => (
