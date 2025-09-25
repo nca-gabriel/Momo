@@ -6,15 +6,17 @@ export const tagForm = z.object({
 });
 
 export const tagData = tagForm.extend({
-  id: z.string().optional(),
-  todoId: z.string().nullish(), // shorthand for .nullable().optional(),
-  createdAt: z.date().optional(),
+  id: z.string(),
+  createdAt: z.coerce.date().optional(),
 });
 
 // Array for validation
 export const TagArr = z.array(tagData);
 
-export const tagPatch = tagForm.partial();
+export const tagPatch = tagData.partial().extend({
+  color: z.string().min(1, "Color is required").optional(),
+});
+
 export type TagPatch = z.infer<typeof tagPatch>;
 
 export type TagForm = z.infer<typeof tagForm>; // for forms / RHF

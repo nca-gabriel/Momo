@@ -8,15 +8,11 @@ export default async function page() {
     include: { subTodos: true },
   });
 
-  const allTagIds = todosRaw.flatMap((t) => t.tagIds ?? []);
-
-  const tags = await prisma.tag.findMany({
-    where: { id: { in: allTagIds } },
-  });
+  const tags = await prisma.tag.findMany({});
 
   const todos = todosRaw.map((todo) => ({
     ...todo,
-    tag: tags.filter((tag) => todo.tagIds.includes(tag.id)),
+    tag: tags.find((tag) => tag.id === todo.tagId) ?? null, // ✅ single object
   }));
 
   // validate from db

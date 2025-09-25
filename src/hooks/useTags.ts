@@ -18,7 +18,7 @@ export function useTags() {
     },
   });
 
-  const addMutation = useMutation({
+  const addTag = useMutation({
     mutationFn: async (tag: TagForm) => {
       const res = await axios.post("/api/tags", tag);
       return res.data;
@@ -26,7 +26,7 @@ export function useTags() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
   });
 
-  const updateMutation = useMutation({
+  const updateTag = useMutation({
     mutationFn: async ({ id, tag }: { id: string; tag: TagPatch }) => {
       const res = await axios.patch(`/api/tags/${id}`, tag);
       return res.data;
@@ -34,7 +34,7 @@ export function useTags() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
   });
 
-  const deleteMutation = useMutation({
+  const deleteTag = useMutation({
     mutationFn: async (id: string) => {
       await axios.delete(`/api/tags/${id}`);
       return id;
@@ -44,8 +44,8 @@ export function useTags() {
 
   return {
     tagsQuery,
-    addMutation,
-    updateMutation,
-    deleteMutation,
+    addTag,
+    updateTag,
+    deleteTag,
   };
 }

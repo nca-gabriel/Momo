@@ -1,98 +1,116 @@
-// import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import type { Resolver } from "react-hook-form";
-// import { useEffect } from "react";
+"use client";
 
-// import { tagSchema, type tagInput } from "../utils/tag.schema";
-// import { useTagContext } from "@/context/AppProvider";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// type Props = {
-//   initialValues: tagInput | null;
-//   onClose: () => void;
-// };
+import { tagForm, type TagForm, TagData, TagPatch } from "@/utils/tag.schema";
+import { useTags } from "@/hooks/useTags";
 
-// type TagFormData = Omit<tagInput, "id" | "date">;
+type Props = {
+  open: boolean;
+  initValues: TagData | null;
+  onClose: () => void;
+  onSubmit: (data: TagForm) => void;
+  onDelete: (id: string) => void;
+};
 
-// export default function TagForm({ initialValues, onClose }: Props) {
-//   const { addtag, updatetag, deletetag } = useTagContext();
+export default function TagForm({
+  open,
+  initValues,
+  onClose,
+  onSubmit,
+  onDelete,
+}: Props) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(tagForm),
+    defaultValues: initValues ?? {
+      name: "",
+      color: "#000000",
+    },
+  });
 
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     reset,
-//   } = useForm<TagFormData>({
-//     resolver: zodResolver(
-//       tagSchema.omit({ id: true, date: true })
-//     ) as Resolver<TagFormData>,
-//     defaultValues: initialValues ?? {
-//       name: "",
-//       color: "#000000",
-//     },
-//   });
+  const { addTag, updateTag, deleteTag } = useTags();
 
-//   // reset form when editing
-//   useEffect(() => {
-//     reset(initialValues ?? { name: "", color: "#000000" });
-//   }, [initialValues, reset]);
+  useEffect(() => {
+    if (initValues) {
+      reset(initValues);
+    } else {
+      reset({
+        name: "",
+        color: "#000000",
+      });
+    }
+  }, [initValues, reset]);
 
-//   const handleFormSubmit = (data: TagFormData) => {
-//     if (initialValues) {
-//       updatetag(initialValues.id, data);
-//       reset(data); // keep synced
-//     } else {
-//       addtag(data); // ✅ id + date handled in hook
-//       reset({ name: "", color: "#000000" });
-//     }
-//     onClose();
-//   };
+  if (!open) return null;
 
-//   const handleDelete = () => {
-//     if (initialValues) {
-//       deletetag(initialValues.id);
-//       onClose();
-//     }
-//   };
+  const submitHandler = (data: TagForm) => {
+    if (initValues) {
+      updateTag.mutate({ id: initValues.id, tag: data });
+    } else {
+      addTag.mutate(data);
+    }
+    onSubmit(data);
+    onClose();
+    reset({
+      name: "",
+      color: "#000000",
+    });
+  };
 
-//   return (
-//     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-2 p-1">
-//       <section className="flex gap-1 border rounded p-0.5">
-//         <input
-//           type="color"
-//           {...register("color")}
-//           className="h-10 w-10 rounded-sm cursor-pointer"
-//         />
-//         {errors.color && (
-//           <p className="text-red-500 text-sm">{errors.color.message}</p>
-//         )}
-//         <input
-//           {...register("name")}
-//           placeholder="tag Name"
-//           className="w-full p-2  "
-//         />
-//         {errors.name && (
-//           <p className="text-red-500 text-sm">{errors.name.message}</p>
-//         )}
-//       </section>
+  const handleDelete = (id: string) => {
+    deleteTag.mutate(id, {
+      onSuccess: () => {
+        onDelete(id);
+        onClose();
+      },
+    });
+  };
 
-//       <div className="flex gap-2">
-//         <button
-//           type="submit"
-//           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-//         >
-//           {initialValues ? "Update" : "Save"}
-//         </button>
+  return (
+    <form onSubmit={handleSubmit(submitHandler)} className="space-y-2 p-1">
+      <section className="flex gap-1 border rounded p-0.5">
+        <div>
+          <input
+            type="color"
+            {...register("color")}
+            className="h-10 w-10 rounded-sm cursor-pointer"
+          />
+          {errors.color && (
+            <span className="text-red-500 text-sm">{errors.color.message}</span>
+          )}
+        </div>
+        <div>
+          <input {...register("name")} className="w-full p-2" />
+          {errors.name && (
+            <span className="text-red-500 text-sm">{errors.name.message}</span>
+          )}
+        </div>
+      </section>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          {initValues ? "Update" : "Save"}
+        </button>
 
-//         {initialValues && (
-//           <button
-//             type="button"
-//             onClick={handleDelete}
-//             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-//           >
-//             Delete
-//           </button>
-//         )}
-//       </div>
-//     </form>
-//   );
-// }
+        {initValues && (
+          <button
+            type="button"
+            onClick={() => handleDelete(initValues.id)}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
+        )}
+      </div>
+    </form>
+  );
+}

@@ -40,10 +40,14 @@ export default function TodoForm1({
       description: "",
       completed: false,
       todoDate: new Date(),
-      tag: [],
+      tags: [],
       subTodos: [],
     },
   });
+
+  {
+    console.log("initValues", initValues);
+  }
 
   const { fields, prepend, remove } = useFieldArray({
     control,
@@ -51,7 +55,7 @@ export default function TodoForm1({
   });
 
   const subTodosData = watch("subTodos") ?? [];
-  const { addSub, updateSub, deleteSub } = useSubTodos(initValues?.id ?? "");
+  const { addSub, updateSub } = useSubTodos(initValues?.id ?? "");
 
   useEffect(() => {
     if (initValues) reset(initValues);
@@ -61,7 +65,7 @@ export default function TodoForm1({
         description: "",
         completed: false,
         todoDate: new Date(),
-        tag: [],
+        tags: [],
         subTodos: [],
       });
   }, [initValues, reset]);
@@ -76,7 +80,7 @@ export default function TodoForm1({
         description: "",
         completed: false,
         todoDate: new Date(),
-        tag: [],
+        tags: [],
         subTodos: [],
       });
   };
@@ -172,7 +176,7 @@ export default function TodoForm1({
           <div className="flex flex-col gap-2">
             <label>Tags</label>
             <select
-              {...register("tag")}
+              {...register("tagIds")}
               className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
             >
               {tags.map((tag) => (

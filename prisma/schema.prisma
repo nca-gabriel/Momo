@@ -19,7 +19,7 @@ model Todo {
   description String?
   completed   Boolean   @default(false)
   subTodos    SubTodo[]
-  tagIds      String[]  @db.ObjectId //ref
+  tagId       String    @db.ObjectId //ref
   todoDate    DateTime
   createdAt   DateTime  @default(now())
 }

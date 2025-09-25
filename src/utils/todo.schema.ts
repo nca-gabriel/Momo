@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { tagData } from "./tag.schema";
 import { subTodoPatch, subTodoData } from "./subtodo.schema";
+import { tagData } from "./tag.schema";
 
 export const todoForm = z.object({
   title: z.string().min(1),
@@ -8,14 +8,14 @@ export const todoForm = z.object({
   completed: z.boolean().optional(),
   todoDate: z.coerce.date(),
   subTodos: z.array(subTodoPatch).optional(), // for creating nested subtodos
-  tag: z.array(tagData).optional(), // for creating nested tags
+  tagId: z.string().optional(),
 });
 
 export const todoData = todoForm.extend({
   id: z.string(),
   createdAt: z.coerce.date(),
   subTodos: z.array(subTodoData), // full subTodo info when fetching/updating
-  tag: z.array(tagData), // full tag info when fetching/updating
+  tags: tagData.optional(),
 });
 
 export const TodoDataArr = z.array(todoData);

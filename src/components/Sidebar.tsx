@@ -5,9 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTodos } from "@/hooks/useTodos";
 import { useTags } from "@/hooks/useTags";
+import TagForm from "./TagForm";
+import { TagData } from "@/utils/tag.schema";
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [opentag, setOpentag] = useState(false);
+  const [editingtag, setEditingtag] = useState<TagData | null>(null);
   const pathname = usePathname();
 
   const { todosQuery } = useTodos();
@@ -110,23 +114,68 @@ export default function Sidebar() {
 
         {/* Tags */}
         {!collapsed && (
-          <section className="px-4 py-6">
+          <section className="px-4 py-6 ">
             <p className="text-xs font-semibold text-gray-500">TAGS</p>
             <ul className="mt-2 space-y-1">
               {tags.map((tag) => (
                 <li key={tag.id}>
-                  <Link
-                    href={`/tags/${tag.id}`}
-                    className="flex items-center gap-3 px-2 py-1 hover:bg-gray-100 rounded"
-                  >
-                    <span
-                      className="w-5 h-5 rounded-sm"
-                      style={{ backgroundColor: tag.color }}
-                    />
-                    <span>{tag.name}</span>
-                  </Link>
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={`/tags/${tag.id}`}
+                      className=" flex flex-1 items-center gap-3 px-2 py-1 hover:bg-gray-100 rounded"
+                    >
+                      <span
+                        className="w-5 h-5 rounded-sm"
+                        style={{ backgroundColor: tag.color }}
+                      />
+                      <span>{tag.name}</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        if (editingtag?.id === tag.id) {
+                          setOpentag((prev) => !prev);
+                        } else {
+                          setEditingtag(tag);
+                          setOpentag(true);
+                        }
+                      }}
+                      className="ml-2 px-2 py-1 text-sm text-gray-500 hover:text-violet-600"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </li>
               ))}
+              <li>
+                <button
+                  onClick={() => {
+                    setEditingtag(null);
+                    setOpentag((prev) => !prev);
+                  }}
+                  className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-violet-700"
+                >
+                  + Add a new tag
+                </button>
+              </li>
+
+              {opentag && (
+                <div className="p-2 mt-2">
+                  <TagForm
+                    open={opentag}
+                    initValues={editingtag}
+                    onClose={() => {
+                      setOpentag(false);
+                      setEditingtag(null);
+                    }}
+                    onSubmit={(data) => {
+                      console.log("submit tag", data);
+                    }}
+                    onDelete={(id) => {
+                      console.log("delete tag", id);
+                    }}
+                  />
+                </div>
+              )}
             </ul>
           </section>
         )}
