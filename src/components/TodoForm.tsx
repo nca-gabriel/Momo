@@ -8,6 +8,7 @@ import { TodoData, TodoForm, todoForm } from "@/utils/todo.schema";
 import { SubTodoPatch } from "@/utils/subtodo.schema";
 import { TagData } from "@/utils/tag.schema";
 import { useSubTodos } from "@/hooks/useTodos";
+import { localISOTime, toLocalDatetimeInput } from "@/utils/dateFormat";
 
 type Props = {
   open: boolean;
@@ -35,14 +36,19 @@ export default function TodoForm1({
     watch,
   } = useForm({
     resolver: zodResolver(todoForm),
-    defaultValues: initValues ?? {
-      title: "",
-      description: "",
-      completed: false,
-      todoDate: new Date(),
-      tagId: "",
-      subTodos: [],
-    },
+    defaultValues: initValues
+      ? {
+          ...initValues,
+          todoDate: toLocalDatetimeInput(new Date(initValues.todoDate)),
+        }
+      : {
+          title: "",
+          description: "",
+          completed: false,
+          todoDate: toLocalDatetimeInput(new Date()),
+          tagId: "",
+          subTodos: [],
+        },
   });
 
   {
@@ -58,13 +64,17 @@ export default function TodoForm1({
   const { addSub, updateSub } = useSubTodos(initValues?.id ?? "");
 
   useEffect(() => {
-    if (initValues) reset(initValues);
+    if (initValues)
+      reset({
+        ...initValues,
+        todoDate: toLocalDatetimeInput(new Date(initValues.todoDate)),
+      });
     else
       reset({
         title: "",
         description: "",
         completed: false,
-        todoDate: new Date(),
+        todoDate: toLocalDatetimeInput(new Date()),
         tagId: "",
         subTodos: [],
       });
@@ -79,7 +89,7 @@ export default function TodoForm1({
         title: "",
         description: "",
         completed: false,
-        todoDate: new Date(),
+        todoDate: toLocalDatetimeInput(new Date()),
         tagId: "",
         subTodos: [],
       });
@@ -164,6 +174,7 @@ export default function TodoForm1({
           <div>
             <input
               type="datetime-local"
+              min={localISOTime}
               {...register("todoDate")}
               className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
             />

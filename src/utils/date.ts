@@ -1,3 +1,5 @@
+import { TodoData } from "@/utils/todo.schema";
+
 // utils/date.ts
 export function isToday(date: string | Date) {
   const d = new Date(date);
@@ -9,7 +11,7 @@ export function isToday(date: string | Date) {
   );
 }
 
-export function isTomorrow(date: string | Date) {
+function isTomorrow(date: string | Date) {
   const d = new Date(date);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -20,7 +22,7 @@ export function isTomorrow(date: string | Date) {
   );
 }
 
-export function isThisWeek(date: string | Date) {
+function isThisWeek(date: string | Date) {
   const d = new Date(date);
   const now = new Date();
   const startOfWeek = new Date(now);
@@ -31,3 +33,32 @@ export function isThisWeek(date: string | Date) {
   endOfWeek.setHours(23, 59, 59, 999);
   return d >= startOfWeek && d <= endOfWeek;
 }
+
+export type DateFilter = "today" | "tomorrow" | "thisWeek";
+
+export const filterTodos = (filterBy: DateFilter, todos: TodoData[]) => {
+  let filtered: TodoData[];
+
+  switch (filterBy) {
+    case "today":
+      filtered = todos.filter((t) => t.todoDate && isToday(t.todoDate));
+      break;
+    case "tomorrow":
+      filtered = todos.filter((t) => t.todoDate && isTomorrow(t.todoDate));
+      break;
+    case "thisWeek":
+      filtered = todos.filter((t) => t.todoDate && isThisWeek(t.todoDate));
+      break;
+    default:
+      filtered = todos;
+  }
+
+  // sort by closest upcoming time
+  const now = new Date();
+  return filtered.sort((a, b) => {
+    if (!a.todoDate || !b.todoDate) return 0;
+    const diffA = new Date(a.todoDate).getTime() - now.getTime();
+    const diffB = new Date(b.todoDate).getTime() - now.getTime();
+    return diffA - diffB;
+  });
+};

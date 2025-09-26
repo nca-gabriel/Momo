@@ -6,7 +6,7 @@ export const todoForm = z.object({
   title: z.string().min(1),
   description: z.string().nullish(),
   completed: z.boolean().optional(),
-  todoDate: z.coerce.date(),
+  todoDate: z.union([z.string(), z.date()]).transform((date) => new Date(date)), // can be empty
   subTodos: z.array(subTodoPatch).optional(), // for creating nested subtodos
   tagId: z.string().nullish(), // only store the FK in form
 });

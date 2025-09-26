@@ -6,9 +6,8 @@ import { TagData } from "@/utils/tag.schema";
 import TodoForm from "./TodoForm";
 import Image from "next/image";
 import { useTodos, useTodo } from "@/hooks/useTodos";
-import { isToday, isThisWeek, isTomorrow } from "@/utils/date";
-
-type DateFilter = "today" | "tomorrow" | "thisWeek";
+import { filterTodos, DateFilter } from "@/utils/date";
+import { formatTodoDate } from "@/utils/dateFormat";
 
 type Props = {
   todos: TodoData[];
@@ -26,20 +25,7 @@ export default function Todos({ todos, tags, filterBy, title }: Props) {
 
   const { addMutation, updateMutation, deleteMutation } = useTodos();
 
-  const filterTodos = () => {
-    switch (filterBy) {
-      case "today":
-        return todos.filter((t) => t.todoDate && isToday(t.todoDate));
-      case "tomorrow":
-        return todos.filter((t) => t.todoDate && isTomorrow(t.todoDate));
-      case "thisWeek":
-        return todos.filter((t) => t.todoDate && isThisWeek(t.todoDate));
-      default:
-        return todos;
-    }
-  };
-
-  const filteredTodos = filterTodos();
+  const filteredTodos = filterTodos(filterBy, todos);
 
   return (
     <main className="flex flex-1">
@@ -124,11 +110,7 @@ export default function Todos({ todos, tags, filterBy, title }: Props) {
                         width={18}
                         height={18}
                       />
-                      {new Date(todo.todoDate).toLocaleDateString("en-GB", {
-                        month: "2-digit",
-                        day: "2-digit",
-                        year: "2-digit",
-                      })}
+                      {formatTodoDate(new Date(todo.todoDate), filterBy)}
                     </div>
 
                     {todo.subTodos?.length > 0 && (

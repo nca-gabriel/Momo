@@ -12,9 +12,9 @@ export async function GET(
     include: { subTodos: true },
   });
 
-  const tag = await prisma.tag.findMany({
-    where: { id: { in: todo?.tagIds ?? [] } },
-  });
+  const tag = todo?.tagId
+    ? await prisma.tag.findUnique({ where: { id: todo.tagId } })
+    : null;
 
   if (!todo) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ ...todo, tag });
@@ -35,15 +35,13 @@ export async function PATCH(
     );
   }
 
-  const { subTodos, tag, ...todoFields } = result.data;
+  const { subTodos, ...todoFields } = result.data;
 
   try {
     const updatedTodo = await prisma.todo.update({
       where: { id },
       data: {
         ...todoFields,
-        // update tag references
-        tagIds: tag ? tag.map((t) => t.id!).filter(Boolean) : undefined,
       },
       include: { subTodos: true }, // still include subtodos for frontend
     });
