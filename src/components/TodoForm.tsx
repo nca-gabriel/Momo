@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -9,11 +9,14 @@ import { SubTodoPatch } from "@/utils/subtodo.schema";
 import { TagData } from "@/utils/tag.schema";
 import { useSubTodos } from "@/hooks/useTodos";
 import { localISOTime, toLocalDatetimeInput } from "@/utils/dateFormat";
+import { DateFilter, getDefaultDate } from "@/utils/date";
 
 type Props = {
   open: boolean;
   initValues: TodoData | null;
   tags: TagData[];
+  filterBy: DateFilter;
+  defaultDate?: Date;
   onClose: () => void;
   onSubmit: (data: TodoForm) => void;
   onDelete: (id: string) => void;
@@ -23,10 +26,17 @@ export default function TodoForm1({
   open,
   initValues,
   tags,
+  filterBy,
+  defaultDate,
   onClose,
   onSubmit,
   onDelete,
 }: Props) {
+  const fallbackDate = useMemo(
+    () => defaultDate ?? getDefaultDate(filterBy),
+    [defaultDate, filterBy]
+  );
+
   const {
     register,
     handleSubmit,
@@ -36,24 +46,23 @@ export default function TodoForm1({
     watch,
   } = useForm({
     resolver: zodResolver(todoForm),
-    defaultValues: initValues
-      ? {
+    defaultValues: useMemo(() => {
+      if (initValues) {
+        return {
           ...initValues,
           todoDate: toLocalDatetimeInput(new Date(initValues.todoDate)),
-        }
-      : {
-          title: "",
-          description: "",
-          completed: false,
-          todoDate: toLocalDatetimeInput(new Date()),
-          tagId: "",
-          subTodos: [],
-        },
+        };
+      }
+      return {
+        title: "",
+        description: "",
+        completed: false,
+        todoDate: toLocalDatetimeInput(fallbackDate),
+        tagId: "",
+        subTodos: [],
+      };
+    }, [initValues, fallbackDate]),
   });
-
-  {
-    console.log("initValues", initValues);
-  }
 
   const { fields, prepend, remove } = useFieldArray({
     control,
@@ -63,22 +72,29 @@ export default function TodoForm1({
   const subTodosData = watch("subTodos") ?? [];
   const { addSub, updateSub } = useSubTodos(initValues?.id ?? "");
 
+  const prevTodoId = useRef<string | null>(null);
+
   useEffect(() => {
-    if (initValues)
-      reset({
-        ...initValues,
-        todoDate: toLocalDatetimeInput(new Date(initValues.todoDate)),
-      });
-    else
-      reset({
-        title: "",
-        description: "",
-        completed: false,
-        todoDate: toLocalDatetimeInput(new Date()),
-        tagId: "",
-        subTodos: [],
-      });
-  }, [initValues, reset]);
+    if (initValues?.id !== prevTodoId.current) {
+      prevTodoId.current = initValues?.id ?? null;
+
+      reset(
+        initValues
+          ? {
+              ...initValues,
+              todoDate: toLocalDatetimeInput(new Date(initValues.todoDate)),
+            }
+          : {
+              title: "",
+              description: "",
+              completed: false,
+              todoDate: toLocalDatetimeInput(fallbackDate),
+              tagId: "",
+              subTodos: [],
+            }
+      );
+    }
+  }, [initValues, fallbackDate, reset]);
 
   if (!open) return null;
 
@@ -89,7 +105,7 @@ export default function TodoForm1({
         title: "",
         description: "",
         completed: false,
-        todoDate: toLocalDatetimeInput(new Date()),
+        todoDate: toLocalDatetimeInput(fallbackDate),
         tagId: "",
         subTodos: [],
       });
@@ -130,7 +146,7 @@ export default function TodoForm1({
 
   return (
     <main
-      className={`z-10 flex flex-col ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200 max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 overflow-y-auto transition-all duration-300 ${
+      className={`z-10 flex flex-col ml-3 rounded bg-gray-50 shadow-lg p-4 border-e border-gray-200 max-sm:fixed max-sm:top-0 max-sm:right-0 max-sm:bottom-0 max-sm:w-60 transition-all duration-300 ${
         open ? "w-70" : ""
       }`}
     >
@@ -146,65 +162,61 @@ export default function TodoForm1({
 
       <form
         onSubmit={handleSubmit(submitHandler)}
-        className="flex flex-col flex-auto gap-3"
+        className="flex flex-col gap-3" // removed flex-auto
       >
-        <section>
-          {/* Title */}
-          <div className="flex flex-col">
-            <input
-              {...register("title")}
-              placeholder="Enter Title"
-              className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title.message}</p>
-            )}
-          </div>
+        {/* Title */}
+        <div className="flex flex-col">
+          <input
+            {...register("title")}
+            placeholder="Enter Title"
+            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+          />
+          {errors.title && (
+            <p className="text-red-500 text-sm">{errors.title.message}</p>
+          )}
+        </div>
 
-          {/* Description */}
-          <div className="flex-1">
-            <textarea
-              {...register("description")}
-              placeholder="Enter Description"
-              className="flex flex-1 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-            />
-          </div>
+        {/* Description */}
+        <div>
+          <textarea
+            {...register("description")}
+            placeholder="Enter Description"
+            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black w-full"
+          />
+        </div>
 
-          {/* Todo Date */}
-          <div>
-            <input
-              type="datetime-local"
-              min={localISOTime}
-              {...register("todoDate")}
-              className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
-            />
-            {errors.todoDate && (
-              <p className="text-red-500 text-sm">{errors.todoDate!.message}</p>
-            )}
-          </div>
+        {/* Todo Date */}
+        <div>
+          <input
+            type="datetime-local"
+            min={localISOTime}
+            {...register("todoDate")}
+            className="w-full border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black my-2"
+          />
+          {errors.todoDate && (
+            <p className="text-red-500 text-sm">{errors.todoDate!.message}</p>
+          )}
+        </div>
 
-          {/* Tags */}
-          <div className="flex flex-col gap-2">
-            <label>Tags</label>
-            <select
-              {...register("tagId")}
-              className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
-            >
-              {tags.map((tag) => (
-                <option key={tag.id} value={tag.id} className="bg-blue-200">
-                  {tag.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
+        {/* Tags */}
+        <div className="flex flex-col gap-2">
+          <label>Tags</label>
+          <select
+            {...register("tagId")}
+            className="border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black"
+          >
+            {tags.map((tag) => (
+              <option key={tag.id} value={tag.id}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* SubTodos */}
         <div className="flex flex-col w-full">
           <h1 className="font-bold text-lg mt-2">Subtask:</h1>
-
-          {/* Add button */}
-          <div className="flex justify-start border-gray-200 text-gray-500 rounded-md focus-within:text-black mb-2">
+          <div className="flex justify-start mb-2">
             <button
               type="button"
               onClick={() =>
@@ -216,85 +228,69 @@ export default function TodoForm1({
               <span>Add New Subtask</span>
             </button>
           </div>
-
-          {/* Subtodos container */}
           <section className="max-h-52 overflow-y-auto overflow-x-hidden flex flex-col gap-2">
-            {fields
-              .map((field, index) => ({ field, index }))
-              .sort(
-                (a, b) =>
-                  (subTodosData[a.index].done ? 1 : -1) -
-                  (subTodosData[b.index].done ? 1 : -1)
-              )
-              .map(({ field, index }) => {
-                const current = subTodosData[index];
-                const isNew = !current.id;
-
-                return (
-                  <div
-                    key={field.id}
-                    className={`flex sm:flex-row gap-2 mb-2 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black
-    ${current.done ? "opacity-50" : ""}`}
-                  >
-                    {isNew ? (
-                      <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          remove(index);
-                        }}
-                        className="text-red-500 font-bold w-5 h-5 mt-1"
-                      >
-                        ✕
-                      </button>
-                    ) : (
-                      <input
-                        type="checkbox"
-                        checked={current.done}
-                        onChange={() => {
-                          if (
-                            confirm(
-                              `Are you sure you want to mark "${current.title}" as done? This will update it.`
-                            )
-                          ) {
-                            updateSub.mutate({
-                              id: current.id!,
-                              subTodo: { ...current, done: !current.done },
-                            });
-                          }
-                        }}
-                        className="w-5 h-5 mt-1 cursor-pointer accent-violet-600"
-                      />
-                    )}
-
-                    <div
-                      className={`flex-1 flex flex-col gap-1 min-w-0
-      ${current.done ? "line-through text-gray-400" : ""}`}
-                      tabIndex={-1}
-                      onBlur={(e) => {
-                        if (
-                          !e.currentTarget.contains(e.relatedTarget as Node)
-                        ) {
-                          handleSubBlur(current, index);
-                        }
+            {fields.map((field, index) => {
+              const current = subTodosData[index];
+              const isNew = !current.id;
+              return (
+                <div
+                  key={field.id}
+                  className={`flex sm:flex-row gap-2 mb-2 border border-gray-200 text-gray-500 p-2 rounded-md focus-within:text-black ${
+                    current.done ? "opacity-50" : ""
+                  }`}
+                >
+                  {isNew ? (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        remove(index);
                       }}
+                      className="text-red-500 font-bold w-5 h-5 mt-1"
                     >
-                      <input
-                        {...register(`subTodos.${index}.title`)}
-                        placeholder="Subtodo title"
-                        className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black w-full"
-                      />
-                      <input
-                        {...register(`subTodos.${index}.description`)}
-                        placeholder="Subtodo description"
-                        className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black w-full"
-                      />
-                    </div>
+                      ✕
+                    </button>
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={current.done}
+                      onChange={() =>
+                        updateSub.mutate({
+                          id: current.id!,
+                          subTodo: { ...current, done: !current.done },
+                        })
+                      }
+                      className="w-5 h-5 mt-1 cursor-pointer accent-violet-600"
+                    />
+                  )}
+
+                  <div
+                    className={`flex-1 flex flex-col gap-1 min-w-0 ${
+                      current.done ? "line-through text-gray-400" : ""
+                    }`}
+                    tabIndex={-1}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                        handleSubBlur(current, index);
+                      }
+                    }}
+                  >
+                    <input
+                      {...register(`subTodos.${index}.title`)}
+                      placeholder="Subtodo title"
+                      className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black w-full"
+                    />
+                    <input
+                      {...register(`subTodos.${index}.description`)}
+                      placeholder="Subtodo description"
+                      className="border border-gray-200 text-gray-500 p-1 rounded-md focus-within:text-black w-full"
+                    />
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
           </section>
         </div>
 

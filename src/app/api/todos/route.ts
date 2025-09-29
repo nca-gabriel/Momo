@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     data: {
       ...todoFields,
       subTodos: { create: subTodos ?? [] },
-      tagId: tagId ?? undefined,
+      tagId: tagId && tagId.trim() !== "" ? tagId : undefined,
     },
     include: { subTodos: true },
   });

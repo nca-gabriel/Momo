@@ -1,6 +1,8 @@
 import { DateFilter, isToday } from "./date";
 
 const now = new Date();
+
+// utc to local
 export const localISOTime = new Date(
   now.getTime() - now.getTimezoneOffset() * 60000
 )

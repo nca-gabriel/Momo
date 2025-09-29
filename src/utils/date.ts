@@ -34,7 +34,7 @@ function isThisWeek(date: string | Date) {
   return d >= startOfWeek && d <= endOfWeek;
 }
 
-export type DateFilter = "today" | "tomorrow" | "thisWeek";
+export type DateFilter = "today" | "tomorrow" | "thisWeek" | "upcoming";
 
 export const filterTodos = (filterBy: DateFilter, todos: TodoData[]) => {
   let filtered: TodoData[];
@@ -62,3 +62,19 @@ export const filterTodos = (filterBy: DateFilter, todos: TodoData[]) => {
     return diffA - diffB;
   });
 };
+
+export function getDefaultDate(filter: DateFilter): Date {
+  const now = new Date();
+  if (filter === "today") return now;
+  if (filter === "tomorrow") {
+    const t = new Date();
+    t.setDate(now.getDate() + 1);
+    return t;
+  }
+  if (filter === "thisWeek") {
+    const t = new Date();
+    t.setDate(now.getDate() + 3); // arbitrary mid-week default
+    return t;
+  }
+  return now;
+}
