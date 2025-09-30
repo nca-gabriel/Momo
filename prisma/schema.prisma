@@ -43,9 +43,10 @@ model Tag {
   todos     Todo[] // one-to-many
 }
 
-model Notes {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  color     String
-  createdAt DateTime @default(now())
+model Note {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  color       String
+  createdAt   DateTime @default(now())
 }

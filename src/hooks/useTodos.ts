@@ -9,15 +9,16 @@ import {
 import { SubTodoData, SubTodoForm, SubTodoPatch } from "@/utils/subtodo.schema";
 import axios from "axios";
 
-export function useTodos() {
+export function useTodos(tagId?: string) {
   const queryClient = useQueryClient();
 
   // fetch initial
   const todosQuery = useQuery({
-    queryKey: ["todos"],
+    queryKey: ["todos", tagId],
     queryFn: async () => {
       try {
-        const res = await axios.get("/api/todos");
+        const url = tagId ? `/api/tags/${tagId}/todos` : `/api/todos`;
+        const res = await axios.get(url);
         return TodoDataArr.parse(res.data);
       } catch (err) {
         console.error(err);

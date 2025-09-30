@@ -1,4 +1,5 @@
 import { TodoData } from "@/utils/todo.schema";
+import { todo } from "node:test";
 
 // utils/date.ts
 export function isToday(date: string | Date) {
@@ -34,7 +35,7 @@ function isThisWeek(date: string | Date) {
   return d >= startOfWeek && d <= endOfWeek;
 }
 
-export type DateFilter = "today" | "tomorrow" | "thisWeek" | "upcoming";
+export type DateFilter = "today" | "tomorrow" | "thisWeek" | "upcoming" | "all";
 
 export const filterTodos = (filterBy: DateFilter, todos: TodoData[]) => {
   let filtered: TodoData[];
@@ -48,6 +49,13 @@ export const filterTodos = (filterBy: DateFilter, todos: TodoData[]) => {
       break;
     case "thisWeek":
       filtered = todos.filter((t) => t.todoDate && isThisWeek(t.todoDate));
+      break;
+    case "all":
+      return todos;
+    case "upcoming":
+      filtered = todos.filter(
+        (t) => t.todoDate && new Date(t.todoDate) > new Date()
+      );
       break;
     default:
       filtered = todos;

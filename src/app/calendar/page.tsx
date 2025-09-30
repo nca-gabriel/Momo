@@ -3,18 +3,14 @@ import { TodoDataArr } from "@/utils/todo.schema";
 import CalendarClient from "./CalendarClient";
 
 export default async function Page() {
-  // Fetch todos with nested subTodos
-  const todosRaw = await prisma.todo.findMany({ include: { subTodos: true } });
-  const tags = await prisma.tag.findMany();
+  const todos = await prisma.todo.findMany({
+    include: { subTodos: true, tag: true },
+  });
 
-  // Attach tag object to each todo
-  const todos = todosRaw.map((todo) => ({
-    ...todo,
-    tags: tags.find((t) => t.id === todo.tagId) ?? null,
-  }));
-
-  // Validate with Zod
+  // validate from db
   const parsed = TodoDataArr.parse(todos);
+
+  const tags = await prisma.tag.findMany();
 
   return <CalendarClient initialTodos={parsed} initialTags={tags} />;
 }

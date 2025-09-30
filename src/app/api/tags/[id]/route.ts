@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/utils/prisma";
 import { tagForm } from "@/utils/tag.schema";
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
   const tag = await prisma.tag.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
   if (!tag) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(tag);

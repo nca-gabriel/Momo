@@ -64,7 +64,7 @@ export default function TodoForm1({
     }, [initValues, fallbackDate]),
   });
 
-  const { fields, prepend, remove } = useFieldArray({
+  const { fields, prepend, remove, update } = useFieldArray({
     control,
     name: "subTodos",
   });
@@ -77,7 +77,6 @@ export default function TodoForm1({
   useEffect(() => {
     if (initValues?.id !== prevTodoId.current) {
       prevTodoId.current = initValues?.id ?? null;
-
       reset(
         initValues
           ? {
@@ -124,10 +123,8 @@ export default function TodoForm1({
         },
         {
           onSuccess: (savedSubTodo) => {
-            // Replace temp RHF field with DB values including id
-            const updatedFields = [...(watch("subTodos") ?? [])];
-            updatedFields[index] = { ...updatedFields[index], ...savedSubTodo };
-            reset({ ...watch(), subTodos: updatedFields });
+            // Update the specific field using FieldArray's update
+            update(index, { ...subTodosData[index], ...savedSubTodo });
           },
         }
       );
@@ -162,7 +159,7 @@ export default function TodoForm1({
 
       <form
         onSubmit={handleSubmit(submitHandler)}
-        className="flex flex-col gap-3" // removed flex-auto
+        className="flex flex-col gap-3"
       >
         {/* Title */}
         <div className="flex flex-col">
@@ -256,12 +253,14 @@ export default function TodoForm1({
                     <input
                       type="checkbox"
                       checked={current.done}
-                      onChange={() =>
+                      onChange={() => {
+                        const newDone = !current.done;
+                        update(index, { ...current, done: newDone });
                         updateSub.mutate({
                           id: current.id!,
-                          subTodo: { ...current, done: !current.done },
-                        })
-                      }
+                          subTodo: { ...current, done: newDone },
+                        });
+                      }}
                       className="w-5 h-5 mt-1 cursor-pointer accent-violet-600"
                     />
                   )}

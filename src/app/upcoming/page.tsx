@@ -3,18 +3,14 @@ import { TodoDataArr } from "@/utils/todo.schema";
 import UpcomingClient from "./UpcomingClient";
 
 export default async function Page() {
-  const todosRaw = await prisma.todo.findMany({
-    include: { subTodos: true },
+  const todos = await prisma.todo.findMany({
+    include: { subTodos: true, tag: true },
   });
 
-  const tags = await prisma.tag.findMany();
-
-  const todos = todosRaw.map((todo) => ({
-    ...todo,
-    tags: tags.find((tag) => tag.id === todo.tagId) ?? null,
-  }));
-
+  // validate from db
   const parsed = TodoDataArr.parse(todos);
+
+  const tags = await prisma.tag.findMany();
 
   return <UpcomingClient initialTodos={parsed} initialTags={tags} />;
 }
