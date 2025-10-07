@@ -1,4 +1,4 @@
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { TodoDataArr } from "@/utils/todo.schema";
 import CalendarClient from "./CalendarClient";
 

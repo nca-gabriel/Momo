@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { todoForm } from "@/utils/todo.schema";
+import { requireUser } from "@/lib/auth/auth.api";
 
 // GET ALL TODOS
 export async function GET() {
+  const user = await requireUser();
+
   const todos = await prisma.todo.findMany({
+    where: { userId: user.id },
     include: { subTodos: true },
   });
 
   // fetch all relevant tags
   const allTagIds = todos.map((t) => t.tagId).filter(Boolean) as string[];
   const tags = await prisma.tag.findMany({
-    where: { id: { in: allTagIds } },
+    where: { id: { in: allTagIds }, userId: user.id },
   });
 
   // attach single tag object to each todo
@@ -25,6 +29,7 @@ export async function GET() {
 
 // POST REQUEST
 export async function POST(req: Request) {
+  const user = await requireUser();
   const body = await req.json();
   const result = todoForm.safeParse(body);
 
@@ -42,6 +47,7 @@ export async function POST(req: Request) {
       ...todoFields,
       subTodos: { create: subTodos ?? [] },
       tagId: tagId && tagId.trim() !== "" ? tagId : undefined,
+      userId: user.id,
     },
     include: { subTodos: true },
   });

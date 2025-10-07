@@ -1,4 +1,4 @@
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import TagTodosClient from "./TagTodosClient";
 import { TodoDataArr } from "@/utils/todo.schema";
 import { notFound } from "next/navigation";

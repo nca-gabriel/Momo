@@ -9,6 +9,7 @@ export const noteForm = z.object({
 export const noteData = noteForm.extend({
   id: z.string().optional(),
   createdAt: z.coerce.date(),
+  userId: z.string(),
 });
 
 export const NoteArr = z.array(noteData);

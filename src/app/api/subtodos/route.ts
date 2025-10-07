@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { subTodoForm } from "@/utils/subtodo.schema";
 
 export async function POST(req: Request) {

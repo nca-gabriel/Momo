@@ -1,4 +1,4 @@
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { NoteArr } from "@/utils/note.schema";
 import NoteClient from "./NoteClient";
 

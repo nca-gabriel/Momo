@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { tagForm } from "@/utils/tag.schema";
 
 export async function GET(

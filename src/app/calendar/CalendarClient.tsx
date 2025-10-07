@@ -91,10 +91,12 @@ export default function CalendarClient({ initialTodos, initialTags }: Props) {
             }}
             eventDrop={(info) => {
               const todo = todos.find((t) => t.id === info.event.id);
+
               if (todo) {
+                const { tag, ...trimTodo } = todo;
                 updateMutation.mutate({
                   id: todo.id,
-                  todo: { ...todo, todoDate: info.event.start! },
+                  todo: { ...trimTodo, todoDate: info.event.start! },
                 });
               }
             }}

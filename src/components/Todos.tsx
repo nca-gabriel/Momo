@@ -93,6 +93,7 @@ export default function Todos({
                       alt="arrow"
                       width={15}
                       height={15}
+                      unoptimized
                     />
                   </button>
                 </section>
@@ -104,6 +105,7 @@ export default function Todos({
                       alt="calendar"
                       width={18}
                       height={18}
+                      unoptimized
                     />
                     {formatTodoDate(new Date(todo.todoDate), filterBy)}
                   </div>

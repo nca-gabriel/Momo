@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { todoPatch } from "@/utils/todo.schema";
+import { requireUser } from "@/lib/auth/auth.api";
 
 export async function GET(
   _: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
   const { id } = await context.params;
   const todo = await prisma.todo.findUnique({
-    where: { id },
+    where: { id, userId: user.id },
     include: { subTodos: true },
   });
 
@@ -24,6 +26,7 @@ export async function PATCH(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
   const { id } = await context.params;
   const body = await req.json();
   const result = todoPatch.safeParse(body);
@@ -35,13 +38,15 @@ export async function PATCH(
     );
   }
 
-  const { subTodos, ...todoFields } = result.data;
+  // const { subTodos, ...todoFields } = result.data;
+  const { id: _, subTodos: ___, ...todoFields } = result.data;
 
   try {
     const updatedTodo = await prisma.todo.update({
       where: { id },
       data: {
         ...todoFields,
+        userId: user.id,
       },
       include: { subTodos: true }, // still include subtodos for frontend
     });
@@ -60,9 +65,10 @@ export async function DELETE(
   _: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
   const { id } = await context.params;
   try {
-    await prisma.todo.delete({ where: { id } });
+    await prisma.todo.delete({ where: { id, userId: user.id } });
     return NextResponse.json({ message: "deleted" }, { status: 200 });
   } catch (err) {
     console.error("DELETE error:", err);

@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/utils/prisma";
+import { prisma } from "@/lib/prisma";
 import { tagForm } from "@/utils/tag.schema";
+import { requireUser } from "@/lib/auth/auth.api";
 
 export async function GET() {
-  const tags = await prisma.tag.findMany();
+  const user = await requireUser();
+  const tags = await prisma.tag.findMany({
+    where: { userId: user.id },
+    orderBy: { name: "desc" },
+  });
   return NextResponse.json(tags);
 }
 
 export async function POST(req: Request) {
+  const user = await requireUser();
   const body = await req.json();
   const result = tagForm.safeParse(body);
 
@@ -22,6 +28,7 @@ export async function POST(req: Request) {
     data: {
       name: result.data.name,
       color: result.data.color,
+      userId: user.id,
     },
   });
 

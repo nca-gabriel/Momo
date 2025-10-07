@@ -51,6 +51,7 @@ export default function TagForm({
   if (!open) return null;
 
   const submitHandler = (data: TagForm) => {
+    console.log("submitHandler fired", data);
     if (initValues) {
       updateTag.mutate({ id: initValues.id, tag: data });
     } else {

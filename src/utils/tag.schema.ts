@@ -8,6 +8,7 @@ export const tagForm = z.object({
 export const tagData = tagForm.extend({
   id: z.string(),
   createdAt: z.coerce.date().optional(),
+  userId: z.string(),
 });
 
 // Array for validation

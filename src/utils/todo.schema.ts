@@ -15,7 +15,8 @@ export const todoData = todoForm.extend({
   id: z.string(),
   createdAt: z.coerce.date(),
   subTodos: z.array(subTodoData), // full subTodo info when fetching/updating
-  tags: tagData.nullish(),
+  tag: tagData.nullish(),
+  userId: z.string(),
 });
 
 export const TodoDataArr = z.array(todoData);

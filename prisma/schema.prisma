@@ -13,6 +13,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String    @unique
+  emailVerified DateTime?
+  name          String
+  password      String?
+  image         String?
+  accounts      Account[]
+  todos         Todo[] // one-to-many
+  notes         Note[] // one-to-many
+  tags          Tag[] // one-to-many
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String? @db.String
+  token_type        String? @db.String
+  scope             String? @db.String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
 model Todo {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   title       String
@@ -22,6 +51,8 @@ model Todo {
   tagId       String?   @db.ObjectId
   tag         Tag?      @relation(fields: [tagId], references: [id]) // many-to-one
   todoDate    DateTime
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade) // many-to-one
   createdAt   DateTime  @default(now())
 }
 
@@ -41,6 +72,8 @@ model Tag {
   color     String
   createdAt DateTime @default(now())
   todos     Todo[] // one-to-many
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Note {
@@ -49,4 +82,6 @@ model Note {
   description String?
   color       String
   createdAt   DateTime @default(now())
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

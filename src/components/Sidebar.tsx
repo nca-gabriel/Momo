@@ -10,6 +10,7 @@ import { TagData } from "@/utils/tag.schema";
 import { filterTodos } from "@/utils/date";
 import { TodoData } from "@/utils/todo.schema";
 import { Calendar, FileText, ListTodo, Clock } from "lucide-react";
+import { useSession } from "@/hooks/useSession";
 
 const STORAGE_KEY = "sidebar-collapsed";
 
@@ -24,6 +25,8 @@ export default function Sidebar() {
 
   const todos = todosQuery.data ?? [];
   const tags = tagsQuery.data ?? [];
+
+  const { data: session, isLoading, isError } = useSession();
 
   useEffect(() => {
     const raw =
@@ -86,7 +89,13 @@ export default function Sidebar() {
       >
         {!collapsed && <p className="font-bold">Menu</p>}
         <button onClick={() => setCollapsed(!collapsed)}>
-          <Image src="/burger.svg" alt="burger-icon" width={24} height={24} />
+          <Image
+            src="/burger.svg"
+            alt="burger-icon"
+            width={24}
+            height={24}
+            unoptimized
+          />
         </button>
       </section>
 
@@ -195,17 +204,26 @@ export default function Sidebar() {
           </div>
 
           {/* Footer */}
+          <div>
+            <p>Settings</p>
+            <p>Sign Out</p>
+          </div>
           <div className="border-t border-gray-200 p-4 flex items-center gap-2">
             <Image
-              alt="Profile"
-              src="/pfp.png"
+              alt={session?.user?.name || "Profile"}
+              src={session?.user?.image || "/pfp.png"}
               width={32}
               height={32}
               className="rounded-full object-cover"
+              unoptimized
             />
             <div>
-              <p className="text-sm font-medium">Neil Christian A. Gabriel</p>
-              <p className="text-xs text-gray-500">ncagabriel02@gmail.com</p>
+              <p className="text-sm font-medium">
+                {session?.user?.name || "Guest User"}
+              </p>
+              <p className="text-xs text-gray-500">
+                {session?.user?.email || "Not signed in"}
+              </p>
             </div>
           </div>
         </>
@@ -249,13 +267,16 @@ export default function Sidebar() {
 
           <div className="mt-auto mb-4 flex flex-col items-center text-center">
             <Image
-              alt="Profile"
-              src="/pfp.png"
+              alt={session?.user?.name || "Profile"}
+              src={session?.user?.image || "/pfp.png"}
               width={32}
               height={32}
               className="rounded-full object-cover"
+              unoptimized
             />
-            <p className="mt-1 text-[10px] font-medium">Neil</p>
+            <p className="mt-1 text-[10px] font-medium">
+              {session?.user?.name?.split(" ")[0] || "Guest"}
+            </p>
           </div>
         </>
       )}
