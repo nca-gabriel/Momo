@@ -1,35 +1,60 @@
-## ABOUT
+<div align="center">
+    <a href="https://github.com/nca-gabriel/Momo" target="_blank">
+        <img src="./public/cat.svg" alt="logo" width="250" height="250" />
+    </a>
 
-Momo is a task management app that helps you organize tasks with dates, notes, and todos. It categorizes tasks into daily, upcoming, and weekly views for easy tracking.
+  <h1>Momo</h1>
+</div>
 
-## BRANCHES
+<p align="center">
+<a href="#project-description">Project Description</a> - 
+<a href="#key-components">Key Components</a> - 
+<a href="#key-features">Key Features</a> - 
+<a href="#tech-stack">Tech Stack</a> - 
+<a href="#branches">Branches</a>
+</p>
 
-✅ A – Frontend Only:
-Implements the UI and task interactions using React and related libraries.
+<img src="./public/page-ss.png" alt="Momo Screenshot" align="center" width="auto" height="auto">
 
-🚧 B – Backend with Prisma:
-Adds a database backend with Prisma for persistent storage of tasks, notes, and todos. (zod, rhf, mongodb, next auth)
+## Project Description
+
+Momo is a task management app that helps you organize tasks efficiently. It supports **tasks, notes, and todos**, and categorizes them into **daily, weekly, and upcoming views**. Users can manage subtasks, add notes, and track deadlines in a clean, responsive interface.
+
+ 
 
 
-## Getting Started
+## Branches
 
-First, run the development server:
+-  **A – Frontend Only**: Implements the UI and task interactions using React, TypeScript, and TailwindCSS.  🔗 [Live Demo](https://github.com/nca-gabriel/Momo) 
+-  **B – Backend with Prisma**: Adds database persistence for tasks, notes, and todos using Prisma, MongoDB, Zod, React Hook Form, and NextAuth for authentication.  (Local only)
+<hr style="border: 0.2px solid #eee;">
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Key Components
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **App.tsx / Layout** – main container handling routing and page layouts.  
+- **TagTodosClient** – displays tasks filtered by tag with initial data.  
+- **TodoForm / NoteForm** – manage creation and editing of tasks, notes, and subtasks.  
+- **Hooks** – `useTodos`, `useTags` for state management and fetching.  
+- **Utils / Zod Schemas** – validation and type safety for tasks, todos, and notes.  
 
-## Technologies used
 
-Next.js
-React
-TypeScript
-TailwindCSS
+
+## Key Features
+
+- 📅 **Task Categorization** – daily, weekly, and upcoming views for easy tracking.  
+- 📝 **Notes & Todos** – add detailed notes and subtasks under main tasks.  
+- 🔐 **User Authentication** – login/signup with NextAuth.  
+- 📋 **Persistent Storage** – Prisma + MongoDB backend for all tasks and notes.  
+- 🎨 **Responsive UI** – clean design built with TailwindCSS.  
+- ⚡ **Fast & Type-Safe** – TypeScript + Zod for reliability and maintainability.  
+
+---
+
+## Tech Stack
+
+**Frontend:** Next.js, React, TypeScript, TailwindCSS  
+**Backend:** Prisma, MongoDB, Zod  
+**Forms & Validation:** React Hook Form  
+**Authentication:** NextAuth  
+
+
