@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://github.com/nca-gabriel/Momo" target="_blank">
+    <a href="https://momo-task.vercel.app" target="_blank">
         <img src="./public/cat.svg" alt="logo" width="250" height="250" />
     </a>
 
