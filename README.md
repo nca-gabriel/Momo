@@ -7,14 +7,18 @@
 </div>
 
 <p align="center">
-<a href="#project-description">Project Description</a> - 
-<a href="#key-components">Key Components</a> - 
-<a href="#key-features">Key Features</a> - 
-<a href="#tech-stack">Tech Stack</a> - 
-<a href="#branches">Branches</a>
+  <a href="#project-description">Project Description</a> &nbsp;|&nbsp; 
+  <a href="#branches">Branches</a>
+  <a href="#key-components">Key Components</a> &nbsp;|&nbsp; 
+  <a href="#key-features">Key Features</a> &nbsp;|&nbsp; 
+  <a href="#tech-stack">Tech Stack</a> &nbsp;|&nbsp; 
+    <a href="#installation">Installation</a> &nbsp;|&nbsp;
+  <a href="#usage">Usage</a>
+
 </p>
 
-<img src="./public/page-ss.png" alt="Momo Screenshot" align="center" width="auto" height="auto">
+<img src="./public/page-ss.png" alt="Momo Screenshot" align="center" style="max-width:100%; height:auto;" />
+
 
 ## Project Description
 
@@ -25,9 +29,15 @@ Momo is a task management app that helps you organize tasks efficiently. It supp
 
 ## Branches
 
--  **A – Frontend Only**: Implements the UI and task interactions using React, TypeScript, and TailwindCSS.  🔗 [Live Demo](https://github.com/nca-gabriel/Momo) 
--  **B – Backend with Prisma**: Adds database persistence for tasks, notes, and todos using Prisma, MongoDB, Zod, React Hook Form, and NextAuth for authentication.  (Local only)
-<hr style="border: 0.2px solid #eee;">
+- 🌐  **A – Frontend Only**  
+  Implements the UI and task interactions using React, TypeScript, and TailwindCSS.  
+  🔗 [Live Demo](https://github.com/nca-gabriel/Momo) 
+
+- 🖥️  **B – Backend / Master**  
+  Adds database persistence for tasks, notes, and todos using Prisma, MongoDB, Zod, React Hook Form, and NextAuth for authentication.  
+  ⚡ Follow the [Installation](#installation) instructions to run locally.
+
+
 
 ## Key Components
 
@@ -42,7 +52,7 @@ Momo is a task management app that helps you organize tasks efficiently. It supp
 ## Key Features
 
 - 📅 **Task Categorization** – daily, weekly, and upcoming views for easy tracking.  
-- 📝 **Notes & Todos** – add detailed notes and subtasks under main tasks.  
+- 📝 **Notes & Todos** – add notes and subtasks under tasks.  
 - 🔐 **User Authentication** – login/signup with NextAuth.  
 - 📋 **Persistent Storage** – Prisma + MongoDB backend for all tasks and notes.  
 - 🎨 **Responsive UI** – clean design built with TailwindCSS.  
@@ -56,5 +66,26 @@ Momo is a task management app that helps you organize tasks efficiently. It supp
 **Backend:** Prisma, MongoDB, Zod  
 **Forms & Validation:** React Hook Form  
 **Authentication:** NextAuth  
+
+
+
+## Installation
+```bash
+git clone https://github.com/nca-gabriel/randomquotes.git
+cd randomquotes
+npm install
+```
+
+
+## Usage
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+
+
 
 
