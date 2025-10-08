@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notePatch } from "@/utils/note.schema";
+import { requireUser } from "@/lib/auth/auth.api";
 
 export async function PATCH(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
   const { id } = await context.params;
   const body = await req.json();
 
@@ -21,7 +23,7 @@ export async function PATCH(
   try {
     // update only editable fields
     const updated = await prisma.note.update({
-      where: { id }, // must be Mongo ObjectId
+      where: { id, userId: user.id }, // must be Mongo ObjectId
       data: {
         name: result.data.name,
         description: result.data.description,
@@ -42,6 +44,7 @@ export async function DELETE(
   _: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
   const { id } = await context.params;
   try {
     await prisma.note.delete({ where: { id } });

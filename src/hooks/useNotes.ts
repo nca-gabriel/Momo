@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 import { NoteArr, NoteData, NoteForm } from "@/utils/note.schema";
+import { toast } from "react-hot-toast";
 
 export default function useNotes() {
   const queryClient = useQueryClient();
@@ -24,7 +25,14 @@ export default function useNotes() {
       const res = await axios.post("/api/notes", note);
       return res.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Note added");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to add note");
+    },
   });
 
   const updateNote = useMutation({
@@ -32,7 +40,14 @@ export default function useNotes() {
       const res = await axios.patch(`/api/notes/${id}`, note);
       return res.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Note updated");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to update note");
+    },
   });
 
   const deleteNote = useMutation({
@@ -40,7 +55,14 @@ export default function useNotes() {
       await axios.delete(`/api/notes/${id}`);
       return id;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notes"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Note deleted");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to delete note");
+    },
   });
   return {
     notesQuery,

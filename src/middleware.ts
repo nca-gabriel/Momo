@@ -4,9 +4,16 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  // Protect all other pages and API routes
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
 
   // Public routes
   const publicPaths = ["/login", "/signup"];
+
+  if (token && publicPaths.some((path) => pathname.startsWith(path))) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   if (
     publicPaths.some((path) => pathname.startsWith(path)) ||
     pathname.startsWith("/api/auth")
@@ -14,8 +21,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protect all other pages and API routes
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -24,7 +29,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)", // exclude static assets
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

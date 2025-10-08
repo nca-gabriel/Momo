@@ -14,7 +14,6 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const user = await requireUser();
-  console.log("user: ", user);
   const body = await req.json();
   const result = noteForm.safeParse(body);
 

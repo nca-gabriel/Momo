@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Sidebar from "@/components/Sidebar";
 import "./globals.css";
 import QueryProvider from "./provider/QueryProvider";
-// import LayoutWrapper from "./provider/LayoutWrapper";
+import LayoutWrapper from "./provider/LayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,12 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen  `}
       >
         <QueryProvider>
-          <div className="flex min-h-screen w-full">
-            <div className="flex w-full max-w-screen-2xl mx-auto gap-2">
-              <Sidebar />
-              <main className="flex-1 p-4">{children}</main>
-            </div>
-          </div>
+          <LayoutWrapper>{children}</LayoutWrapper>
         </QueryProvider>
       </body>
     </html>

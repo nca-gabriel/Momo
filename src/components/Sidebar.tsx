@@ -11,6 +11,7 @@ import { filterTodos } from "@/utils/date";
 import { TodoData } from "@/utils/todo.schema";
 import { Calendar, FileText, ListTodo, Clock } from "lucide-react";
 import { useSession } from "@/hooks/useSession";
+import { signOut } from "next-auth/react";
 
 const STORAGE_KEY = "sidebar-collapsed";
 
@@ -186,7 +187,7 @@ export default function Sidebar() {
                 </li>
 
                 {opentag && (
-                  <div className="p-2 mt-2">
+                  <div className="p-2 mt-2 ">
                     <TagForm
                       open={opentag}
                       initValues={editingtag}
@@ -204,27 +205,31 @@ export default function Sidebar() {
           </div>
 
           {/* Footer */}
-          <div>
-            <p>Settings</p>
-            <p>Sign Out</p>
-          </div>
-          <div className="border-t border-gray-200 p-4 flex items-center gap-2">
-            <Image
-              alt={session?.user?.name || "Profile"}
-              src={session?.user?.image || "/pfp.png"}
-              width={32}
-              height={32}
-              className="rounded-full object-cover"
-              unoptimized
-            />
-            <div>
-              <p className="text-sm font-medium">
-                {session?.user?.name || "Guest User"}
-              </p>
-              <p className="text-xs text-gray-500">
-                {session?.user?.email || "Not signed in"}
-              </p>
-            </div>
+          <div className="border-t border-gray-200 p-4 flex justify-between items-center gap-2">
+            <section className="flex items-center gap-2">
+              <Image
+                alt={session?.user?.name || "Profile"}
+                src={session?.user?.image || "/pfp.png"}
+                width={32}
+                height={32}
+                className="rounded-full object-cover"
+                unoptimized
+              />
+              <div className="flex flex-col p-0 m-0">
+                <p className="text-sm font-medium">
+                  {session?.user?.name || "Guest User"}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {session?.user?.email || "Not signed in"}
+                </p>
+              </div>
+            </section>
+            <button
+              onClick={() => signOut()}
+              className="text-sm text-gray-500 hover:text-violet-600"
+            >
+              Sign Out
+            </button>
           </div>
         </>
       ) : (

@@ -8,6 +8,7 @@ import {
 
 import { SubTodoData, SubTodoForm, SubTodoPatch } from "@/utils/subtodo.schema";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 export function useTodos(tagId?: string) {
   const queryClient = useQueryClient();
@@ -32,7 +33,14 @@ export function useTodos(tagId?: string) {
       const res = await axios.post("/api/todos", todo);
       return res.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Todo added");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to add todo");
+    },
   });
 
   const updateMutation = useMutation({
@@ -40,7 +48,14 @@ export function useTodos(tagId?: string) {
       const res = await axios.patch(`/api/todos/${id}`, todo);
       return res.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Todo updated");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to update todo");
+    },
   });
 
   const deleteMutation = useMutation({
@@ -48,7 +63,14 @@ export function useTodos(tagId?: string) {
       await axios.delete(`/api/todos/${id}`);
       return id;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Todo deleted");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to delete todo");
+    },
   });
 
   return {

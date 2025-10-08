@@ -27,7 +27,7 @@ export const authConfig: NextAuthConfig = {
         );
         if (!valid) return null;
 
-        return user;
+        return { id: user.id, name: user.name, email: user.email };
       },
     }),
     GitHub({

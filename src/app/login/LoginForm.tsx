@@ -1,4 +1,5 @@
 "use client";
+import { PasswordInput } from "./Password";
 
 interface Props {
   email: string;
@@ -18,25 +19,29 @@ export default function LoginForm({
   error,
 }: Props) {
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 rounded"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border p-2 rounded"
-        required
-      />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5 w-full">
+      <div className="flex flex-col gap-1">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="login-inputs"
+          required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <PasswordInput password={password} setPassword={setPassword} />
+      </div>
+
+      {error && (
+        <p className="text-red-500 text-sm font-medium text-center mt-1">
+          {error}
+        </p>
+      )}
+
+      <button type="submit" className="login-buttons ">
         Login
       </button>
     </form>

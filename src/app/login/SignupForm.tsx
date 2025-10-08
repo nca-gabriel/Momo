@@ -1,4 +1,5 @@
 "use client";
+import { PasswordInput } from "./Password";
 
 interface Props {
   name: string;
@@ -28,7 +29,7 @@ export default function SignupForm({
         placeholder="Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border p-2 rounded"
+        className="login-inputs"
         required
       />
       <input
@@ -36,19 +37,13 @@ export default function SignupForm({
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 rounded"
+        className="login-inputs"
         required
       />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border p-2 rounded"
-        required
-      />
+      <PasswordInput password={password} setPassword={setPassword} />
+
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+      <button type="submit" className="login-buttons">
         Sign Up
       </button>
     </form>

@@ -27,12 +27,16 @@ export async function handleAuthAction({
         throw new Error(res.data?.error || "Signup failed");
     }
 
-    await signIn("credentials", {
-      redirect: true,
+    const result = await signIn("credentials", {
+      redirect: false,
       email,
       password,
-      callbackUrl: "/user-info",
+      callbackUrl: "/",
     });
+
+    if (result?.error) throw new Error("Invalid credentials");
+
+    if (result?.url) window.location.href = result.url;
   } catch (err) {
     const message = err instanceof Error ? err.message : "Something went wrong";
     throw new Error(message);

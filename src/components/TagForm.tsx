@@ -76,7 +76,7 @@ export default function TagForm({
 
   return (
     <form onSubmit={handleSubmit(submitHandler)} className="space-y-2 p-1">
-      <section className="flex gap-1 border rounded p-0.5">
+      <section className="flex gap-1 border p-0.5   border-gray-200 rounded">
         <div>
           <input
             type="color"
@@ -88,7 +88,11 @@ export default function TagForm({
           )}
         </div>
         <div>
-          <input {...register("name")} className="w-full p-2" />
+          <input
+            {...register("name")}
+            className="w-full p-2"
+            placeholder="Tag name"
+          />
           {errors.name && (
             <span className="text-red-500 text-sm">{errors.name.message}</span>
           )}

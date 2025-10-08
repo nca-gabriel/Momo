@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { tagForm } from "@/utils/tag.schema";
+import { requireUser } from "@/lib/auth/auth.api";
 
 export async function GET(
   _: Request,
   context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
   const { id } = await context.params;
   const tag = await prisma.tag.findUnique({
-    where: { id },
+    where: { id, userId: user.id },
   });
   if (!tag) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(tag);
@@ -16,8 +18,10 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
+  const { id } = await context.params;
   const body = await req.json();
   const result = tagForm.partial().safeParse(body);
 
@@ -29,7 +33,7 @@ export async function PATCH(
   }
 
   const tag = await prisma.tag.update({
-    where: { id: params.id },
+    where: { id, userId: user.id },
     data: result.data,
   });
 
@@ -38,10 +42,12 @@ export async function PATCH(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const user = await requireUser();
+  const { id } = await context.params;
   try {
-    await prisma.tag.delete({ where: { id: params.id } });
+    await prisma.tag.delete({ where: { id, userId: user.id } });
     return NextResponse.json({ message: "deleted" }, { status: 200 });
   } catch (error) {
     console.error(error);

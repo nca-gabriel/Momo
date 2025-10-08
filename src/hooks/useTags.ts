@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TagArr, TagForm, TagPatch } from "@/utils/tag.schema";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 export function useTags() {
   const queryClient = useQueryClient();
@@ -13,6 +14,7 @@ export function useTags() {
         return TagArr.parse(res.data);
       } catch (error) {
         console.error(error);
+        toast.error("Failed to fetch tags");
         throw error;
       }
     },
@@ -23,7 +25,14 @@ export function useTags() {
       const res = await axios.post("/api/tags", tag);
       return res.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
+      toast.success("Tag added");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to add tag");
+    },
   });
 
   const updateTag = useMutation({
@@ -31,7 +40,14 @@ export function useTags() {
       const res = await axios.patch(`/api/tags/${id}`, tag);
       return res.data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
+      toast.success("Tag updated");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to update tag");
+    },
   });
 
   const deleteTag = useMutation({
@@ -39,7 +55,14 @@ export function useTags() {
       await axios.delete(`/api/tags/${id}`);
       return id;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tags"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tags"] });
+      toast.success("Tag deleted");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to delete tag");
+    },
   });
 
   return {
