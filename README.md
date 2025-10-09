@@ -15,7 +15,7 @@
   <a href="#usage">Usage</a>
 </p>
 
-<img src="./public/page-ss.png" alt="Momo Screenshot" align="center" style="max-width:100%; height:auto;" />
+![Demo](./public/momo-demo.gif)
 
 ---
 
