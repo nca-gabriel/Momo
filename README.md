@@ -15,7 +15,7 @@
   <a href="#usage">Usage</a>
 </p>
 
-![Demo](./public/momo-demo.gif)
+![Demo](./public/momo-demo2.gif)
 
 ---
 
@@ -43,24 +43,24 @@ Built with a **hybrid SSR + CSR** architecture using **Next.js** for optimal per
 
 ## Key Components
 
-- **App.tsx / Layout** – main container handling routing and page layouts.  
-- **TagTodosClient** – displays tasks filtered by tag with initial server-side data (SSR + CSR).  
-- **TodoForm / NoteForm** – manage creation and editing of tasks, notes, and subtasks.  
-- **Hooks** – `useTodos`, `useTags` for state management and React Query fetching.  
-- **Utils / Zod Schemas** – validation and type safety for tasks, todos, and notes.  
+- **App.tsx / Layout** – main container handling routing and page layouts.
+- **TagTodosClient** – displays tasks filtered by tag with initial server-side data (SSR + CSR).
+- **TodoForm / NoteForm** – manage creation and editing of tasks, notes, and subtasks.
+- **Hooks** – `useTodos`, `useTags` for state management and React Query fetching.
+- **Utils / Zod Schemas** – validation and type safety for tasks, todos, and notes.
 
 ---
 
 ## Key Features
 
-- 📅 **Task Categorization** – daily, weekly, and upcoming views for easy tracking.  
-- 📝 **Notes & Todos** – add notes and subtasks under tasks.  
-- 🔐 **User Authentication** – login/signup with NextAuth.  
-- 📋 **Persistent Storage** – Prisma + MongoDB backend for all tasks and notes.  
-- 🎨 **Responsive UI** – clean design built with TailwindCSS.  
-- ⚡ **Fast & Type-Safe** – TypeScript + Zod for reliability and maintainability.  
-- 🔄 **Hybrid Rendering** – SSR for SEO + CSR for fast user interactions.  
-- 🍞 **Realtime Feedback** – React Hot Toast notifications for smooth UX.  
+- 📅 **Task Categorization** – daily, weekly, and upcoming views for easy tracking.
+- 📝 **Notes & Todos** – add notes and subtasks under tasks.
+- 🔐 **User Authentication** – login/signup with NextAuth.
+- 📋 **Persistent Storage** – Prisma + MongoDB backend for all tasks and notes.
+- 🎨 **Responsive UI** – clean design built with TailwindCSS.
+- ⚡ **Fast & Type-Safe** – TypeScript + Zod for reliability and maintainability.
+- 🔄 **Hybrid Rendering** – SSR for SEO + CSR for fast user interactions.
+- 🍞 **Realtime Feedback** – React Hot Toast notifications for smooth UX.
 
 ---
 
@@ -72,7 +72,7 @@ Built with a **hybrid SSR + CSR** architecture using **Next.js** for optimal per
 **Forms & Validation:** React Hook Form  
 **State & Fetching:** React Query  
 **Authentication:** NextAuth  
-**Notifications:** React Hot Toast  
+**Notifications:** React Hot Toast
 
 ---
 
@@ -84,7 +84,6 @@ cd Momo
 npm install
 ```
 
-
 ## Usage
 
 Start the development server:
@@ -92,8 +91,3 @@ Start the development server:
 ```bash
 npm run dev
 ```
-
-
-
-
-
